@@ -178,23 +178,11 @@ export default function Landing() {
               
               <motion.h1 
                 variants={fadeInUp}
-                className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight tracking-tight"
+                className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               >
-                뉴데이클럽에서<br />
-                함께 만들어가는<br />
-                <motion.span 
-                  className="text-primary inline-block relative"
-                  animate={{ scale: [1, 1.03, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  새로운 하루
-                  <motion.span 
-                    className="absolute -bottom-1 left-0 right-0 h-1 bg-primary/40 rounded-full"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ delay: 0.8, duration: 0.6 }}
-                  />
-                </motion.span>
+                <span className="text-muted-foreground/70">뉴데이클럽에서</span><br />
+                <span className="text-muted-foreground/70">함께 만들어가는</span><br />
+                <span className="text-primary">새로운 하루</span>
               </motion.h1>
               
               <motion.p 
