@@ -357,7 +357,165 @@ export default function Landing() {
         </div>
       </section>
 
-      <section id="features" className="py-20 px-4 md:px-6 bg-muted/30">
+      <section className="py-20 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto">
+          <motion.div 
+            className="text-center mb-16"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+          >
+            <motion.h2 
+              variants={fadeInUp}
+              className="text-3xl md:text-4xl font-bold mb-4"
+            >
+              뉴데이클럽이 선사하는 <span className="text-primary">특별한 경험</span>
+            </motion.h2>
+            <motion.p 
+              variants={fadeInUp}
+              className="text-lg text-muted-foreground max-w-2xl mx-auto"
+            >
+              혼자서는 경험하기 어려웠던 것들, 이제 함께라면 가능합니다
+            </motion.p>
+          </motion.div>
+          
+          <motion.div 
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+          >
+            {[
+              { 
+                title: "망설이던 버킷리스트 실현", 
+                desc: "혼자 가기 망설여졌던 해외여행, 스카이다이빙, 등산... 함께할 동행자가 있다면 도전할 용기가 생깁니다.",
+                highlight: "평균 3명의 동행자와 첫 활동 참여"
+              },
+              { 
+                title: "진정한 또래 친구 만들기", 
+                desc: "같은 시대를 살아온 또래와 공감대를 나누고, 인생 후반전을 함께할 진정한 친구를 만들어보세요.",
+                highlight: "회원 78%가 정기적 모임 형성"
+              },
+              { 
+                title: "새로운 취미 발견", 
+                desc: "관심은 있었지만 시작하지 못했던 새로운 취미. 경험자와 함께라면 쉽게 시작할 수 있습니다.",
+                highlight: "평균 2.5개의 새로운 취미 시작"
+              },
+              { 
+                title: "활력 넘치는 일상", 
+                desc: "매주 새로운 활동 일정이 생기고, 기다려지는 약속이 생깁니다. 활기찬 하루하루를 경험하세요.",
+                highlight: "주 평균 2회 이상 활동 참여"
+              },
+              { 
+                title: "안전하고 건강한 사회생활", 
+                desc: "검증된 회원들과 건강한 관계를 맺고, 서로 응원하며 성장하는 커뮤니티에 함께하세요.",
+                highlight: "100% 본인 인증 완료 회원"
+              },
+              { 
+                title: "풍부한 인생 경험 공유", 
+                desc: "각자의 전문 분야와 인생 경험을 나누며, 배움과 가르침이 있는 뜻깊은 만남을 가져보세요.",
+                highlight: "다양한 직업군 회원 3,000명+"
+              }
+            ].map((item, i) => (
+              <motion.div
+                key={item.title}
+                variants={scaleIn}
+                whileHover={{ y: -5, transition: { duration: 0.3 } }}
+                className="p-6 rounded-2xl bg-card border border-border"
+              >
+                <h3 className="text-lg font-bold mb-3 text-foreground">{item.title}</h3>
+                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{item.desc}</p>
+                <div className="flex items-center gap-2 text-xs font-medium text-primary">
+                  <CheckCircle className="w-4 h-4" />
+                  {item.highlight}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="py-20 px-4 md:px-6 bg-muted/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInLeft}
+              className="space-y-8"
+            >
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                  이런 분들께 <span className="text-primary">추천</span>합니다
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  뉴데이클럽은 다음과 같은 분들을 위해 만들어졌습니다
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                {[
+                  "은퇴 후 새로운 사회적 관계를 원하시는 분",
+                  "혼자서는 시작하기 어려운 취미활동을 하고 싶은 분",
+                  "같은 관심사를 가진 또래 친구를 만나고 싶은 분",
+                  "주말마다 의미 있는 활동으로 채우고 싶은 분",
+                  "건강하고 활력 있는 시니어 라이프를 원하시는 분"
+                ].map((text, i) => (
+                  <motion.div 
+                    key={text}
+                    className="flex items-start gap-3 p-4 rounded-xl bg-card border border-border"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                  >
+                    <CheckCircle className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                    <span className="text-foreground">{text}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInRight}
+              className="relative"
+            >
+              <div className="bg-card rounded-2xl p-8 border border-border shadow-lg">
+                <div className="text-center mb-6">
+                  <div className="text-5xl font-bold text-primary mb-2">97%</div>
+                  <p className="text-muted-foreground">회원 만족도</p>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center p-4 rounded-xl bg-muted/50">
+                    <div className="text-2xl font-bold text-foreground mb-1">15,000+</div>
+                    <p className="text-sm text-muted-foreground">누적 활동 수</p>
+                  </div>
+                  <div className="text-center p-4 rounded-xl bg-muted/50">
+                    <div className="text-2xl font-bold text-foreground mb-1">8,500+</div>
+                    <p className="text-sm text-muted-foreground">활동 회원</p>
+                  </div>
+                  <div className="text-center p-4 rounded-xl bg-muted/50">
+                    <div className="text-2xl font-bold text-foreground mb-1">4.8/5</div>
+                    <p className="text-sm text-muted-foreground">평균 활동 평점</p>
+                  </div>
+                  <div className="text-center p-4 rounded-xl bg-muted/50">
+                    <div className="text-2xl font-bold text-foreground mb-1">92%</div>
+                    <p className="text-sm text-muted-foreground">재참여율</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" className="py-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div 
             className="text-center mb-16"
