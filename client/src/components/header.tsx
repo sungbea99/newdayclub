@@ -33,7 +33,7 @@ export function Header() {
               <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
                 <Users className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl text-foreground hidden sm:block">뉴데이클럽</span>
+              <span className="font-bold text-xl text-foreground hidden sm:block">동락</span>
             </div>
           </Link>
 
