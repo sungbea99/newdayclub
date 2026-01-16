@@ -140,7 +140,7 @@ export default function Landing() {
       <section id="features" className="py-20 px-4 md:px-6 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">왜 ActiveSenior인가요?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">왜 뉴데이클럽인가요?</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               50-60대에게 최적화된 안전하고 신뢰할 수 있는 동행 매칭 플랫폼
             </p>
@@ -266,10 +266,10 @@ export default function Landing() {
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
               <Users className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-foreground">ActiveSenior</span>
+            <span className="font-bold text-foreground">뉴데이클럽</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            © 2025 ActiveSenior. All rights reserved.
+            © 2025 뉴데이클럽. All rights reserved.
           </p>
         </div>
       </footer>
