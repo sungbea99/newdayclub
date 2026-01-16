@@ -13,6 +13,7 @@ import {
   MapPin
 } from "lucide-react";
 import { INTEREST_CATEGORIES } from "@shared/schema";
+import activeSeniorsImage from "@assets/generated_images/active_seniors_hiking_together.png";
 
 export default function Landing() {
   return (
@@ -49,7 +50,7 @@ export default function Landing() {
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
                 <Star className="w-4 h-4" />
-                50-60대를 위한 맞춤 플랫폼
+                대표 5060 여가생활 커뮤니티 뉴데이클럽
               </div>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight font-serif">
@@ -94,13 +95,16 @@ export default function Landing() {
             <div className="relative hidden lg:block">
               <div className="relative aspect-square max-w-lg mx-auto">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl" />
-                <div className="absolute inset-4 bg-card rounded-2xl shadow-xl flex items-center justify-center">
-                  <div className="text-center p-8">
-                    <div className="w-32 h-32 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
-                      <Users className="w-16 h-16 text-primary" />
-                    </div>
-                    <h3 className="text-2xl font-bold mb-2">함께하는 즐거움</h3>
-                    <p className="text-muted-foreground">새로운 친구들과 함께<br />여가생활을 즐겨보세요</p>
+                <div className="absolute inset-4 bg-card rounded-2xl shadow-xl overflow-hidden">
+                  <img 
+                    src={activeSeniorsImage} 
+                    alt="함께 여가생활을 즐기는 5060 시니어" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <h3 className="text-2xl font-bold mb-1">함께하는 즐거움</h3>
+                    <p className="text-white/80">새로운 친구들과 함께 여가생활을 즐겨보세요</p>
                   </div>
                 </div>
                 
