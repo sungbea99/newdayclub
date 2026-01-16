@@ -292,6 +292,30 @@ export const insertLikeSchema = createInsertSchema(postLikes).omit({
 export type InsertLike = z.infer<typeof insertLikeSchema>;
 export type PostLike = typeof postLikes.$inferSelect;
 
+// Bookmarks
+export const bookmarks = pgTable("bookmarks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  itemType: varchar("item_type", { length: 20 }).notNull(), // "post" or "activity"
+  itemId: varchar("item_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const bookmarksRelations = relations(bookmarks, ({ one }) => ({
+  user: one(profiles, {
+    fields: [bookmarks.userId],
+    references: [profiles.userId],
+  }),
+}));
+
+export const insertBookmarkSchema = createInsertSchema(bookmarks).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertBookmark = z.infer<typeof insertBookmarkSchema>;
+export type Bookmark = typeof bookmarks.$inferSelect;
+
 // Friends System
 export const friends = pgTable("friends", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +44,7 @@ export default function ActivityDetail() {
   const { toast } = useToast();
   const [message, setMessage] = useState("");
   const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
 
   const { data: activity, isLoading: activityLoading } = useQuery<Activity>({
     queryKey: ["/api/activities", id],
@@ -59,6 +60,54 @@ export default function ActivityDetail() {
     queryKey: ["/api/activities", id, "participants"],
     enabled: !!id,
   });
+
+  // Check if activity is bookmarked
+  const { data: bookmarkStatus } = useQuery<{ isBookmarked: boolean }>({
+    queryKey: ["/api/bookmarks/check", { itemType: "activity", itemId: id }],
+    enabled: !!id && !!user,
+  });
+
+  // Update bookmark state when data is fetched
+  useEffect(() => {
+    if (bookmarkStatus?.isBookmarked !== undefined) {
+      setIsBookmarked(bookmarkStatus.isBookmarked);
+    }
+  }, [bookmarkStatus]);
+
+  const bookmarkMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/bookmarks", { itemType: "activity", itemId: id }),
+    onSuccess: (data: any) => {
+      setIsBookmarked(data.isBookmarked);
+      toast({ 
+        title: data.isBookmarked ? "동행이 저장되었습니다" : "저장이 취소되었습니다" 
+      });
+    },
+  });
+
+  const handleShare = async () => {
+    const shareData = {
+      title: activity?.title || "뉴데이클럽 동행",
+      text: activity?.description || "",
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          copyToClipboard(shareData.url);
+        }
+      }
+    } else {
+      copyToClipboard(shareData.url);
+    }
+  };
+
+  const copyToClipboard = (url: string) => {
+    navigator.clipboard.writeText(url);
+    toast({ title: "링크가 복사되었습니다" });
+  };
 
   const applyMutation = useMutation({
     mutationFn: () => apiRequest("POST", `/api/activities/${id}/apply`, { message }),
@@ -276,10 +325,22 @@ export default function ActivityDetail() {
           </Card>
 
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" data-testid="button-bookmark">
-              <Bookmark className="w-4 h-4" />
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className={isBookmarked ? "text-primary border-primary" : ""}
+              onClick={() => bookmarkMutation.mutate()}
+              disabled={bookmarkMutation.isPending}
+              data-testid="button-bookmark"
+            >
+              <Bookmark className={`w-4 h-4 ${isBookmarked ? "fill-current" : ""}`} />
             </Button>
-            <Button variant="outline" size="icon" data-testid="button-share">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={handleShare}
+              data-testid="button-share"
+            >
               <Share2 className="w-4 h-4" />
             </Button>
           </div>

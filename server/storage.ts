@@ -7,6 +7,7 @@ import {
   communityPosts, type CommunityPost, type InsertCommunityPost,
   postComments, type PostComment, type InsertComment,
   postLikes, type PostLike, type InsertLike,
+  bookmarks, type Bookmark, type InsertBookmark,
   friends, type Friend, type InsertFriend,
 } from "@shared/schema";
 import { db } from "./db";
@@ -55,6 +56,11 @@ export interface IStorage {
   hasUserLiked(postId: string, userId: string): Promise<boolean>;
   getComments(postId: string): Promise<PostComment[]>;
   createComment(comment: InsertComment): Promise<PostComment>;
+  
+  // Bookmarks
+  getBookmarks(userId: string, itemType?: string): Promise<Bookmark[]>;
+  toggleBookmark(userId: string, itemType: string, itemId: string): Promise<boolean>;
+  hasUserBookmarked(userId: string, itemType: string, itemId: string): Promise<boolean>;
   
   // Friends
   getFriends(userId: string): Promise<Friend[]>;
@@ -252,18 +258,15 @@ export class DatabaseStorage implements IStorage {
 
   // Community
   async getCommunityPosts(type?: string, limit = 50): Promise<CommunityPost[]> {
-    let query = db.select().from(communityPosts)
-      .orderBy(desc(communityPosts.createdAt))
-      .limit(limit);
-    
     if (type) {
-      query = db.select().from(communityPosts)
+      return db.select().from(communityPosts)
         .where(eq(communityPosts.postType, type))
         .orderBy(desc(communityPosts.createdAt))
         .limit(limit);
     }
-    
-    return query;
+    return db.select().from(communityPosts)
+      .orderBy(desc(communityPosts.createdAt))
+      .limit(limit);
   }
 
   async getCommunityPost(id: string): Promise<CommunityPost | undefined> {
@@ -333,6 +336,45 @@ export class DatabaseStorage implements IStorage {
       .where(eq(communityPosts.id, comment.postId));
     
     return created;
+  }
+
+  // Bookmarks
+  async getBookmarks(userId: string, itemType?: string): Promise<Bookmark[]> {
+    if (itemType) {
+      return db.select().from(bookmarks)
+        .where(and(eq(bookmarks.userId, userId), eq(bookmarks.itemType, itemType)))
+        .orderBy(desc(bookmarks.createdAt));
+    }
+    return db.select().from(bookmarks)
+      .where(eq(bookmarks.userId, userId))
+      .orderBy(desc(bookmarks.createdAt));
+  }
+
+  async toggleBookmark(userId: string, itemType: string, itemId: string): Promise<boolean> {
+    const [existing] = await db.select().from(bookmarks)
+      .where(and(
+        eq(bookmarks.userId, userId),
+        eq(bookmarks.itemType, itemType),
+        eq(bookmarks.itemId, itemId)
+      ));
+    
+    if (existing) {
+      await db.delete(bookmarks).where(eq(bookmarks.id, existing.id));
+      return false;
+    } else {
+      await db.insert(bookmarks).values({ userId, itemType, itemId });
+      return true;
+    }
+  }
+
+  async hasUserBookmarked(userId: string, itemType: string, itemId: string): Promise<boolean> {
+    const [existing] = await db.select().from(bookmarks)
+      .where(and(
+        eq(bookmarks.userId, userId),
+        eq(bookmarks.itemType, itemType),
+        eq(bookmarks.itemId, itemId)
+      ));
+    return !!existing;
   }
 
   // Friends

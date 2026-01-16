@@ -39,11 +39,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-function PostCard({ post }: { post: CommunityPost & { author?: Profile; isLikedByMe?: boolean } }) {
+function PostCard({ post }: { post: CommunityPost & { author?: Profile; isLikedByMe?: boolean; isBookmarked?: boolean } }) {
   const { user } = useAuth();
   const { toast } = useToast();
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [isBookmarked, setIsBookmarked] = useState(post.isBookmarked || false);
 
   const likeMutation = useMutation({
     mutationFn: () => apiRequest("POST", `/api/community/${post.id}/like`),
@@ -51,6 +52,41 @@ function PostCard({ post }: { post: CommunityPost & { author?: Profile; isLikedB
       queryClient.invalidateQueries({ queryKey: ["/api/community"] });
     },
   });
+
+  const bookmarkMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/bookmarks", { itemType: "post", itemId: post.id }),
+    onSuccess: (data: any) => {
+      setIsBookmarked(data.isBookmarked);
+      toast({ 
+        title: data.isBookmarked ? "게시글이 저장되었습니다" : "저장이 취소되었습니다" 
+      });
+    },
+  });
+
+  const handleShare = async () => {
+    const shareData = {
+      title: post.author?.nickname ? `${post.author.nickname}님의 게시글` : "뉴데이클럽 게시글",
+      text: post.content || "",
+      url: `${window.location.origin}/community/${post.id}`,
+    };
+
+    if (navigator.share && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== "AbortError") {
+          copyToClipboard(shareData.url);
+        }
+      }
+    } else {
+      copyToClipboard(shareData.url);
+    }
+  };
+
+  const copyToClipboard = (url: string) => {
+    navigator.clipboard.writeText(url);
+    toast({ title: "링크가 복사되었습니다" });
+  };
 
   const { data: comments } = useQuery<any[]>({
     queryKey: ["/api/community", post.id, "comments"],
@@ -141,12 +177,25 @@ function PostCard({ post }: { post: CommunityPost & { author?: Profile; isLikedB
               <MessageCircle className="w-5 h-5" />
               <span>{post.commentsCount || 0}</span>
             </Button>
-            <Button variant="ghost" size="sm" className="gap-2" data-testid="button-share">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="gap-2" 
+              onClick={handleShare}
+              data-testid="button-share"
+            >
               <Share2 className="w-5 h-5" />
             </Button>
             <div className="flex-1" />
-            <Button variant="ghost" size="icon" data-testid="button-bookmark">
-              <Bookmark className="w-5 h-5" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={isBookmarked ? "text-primary" : ""}
+              onClick={() => bookmarkMutation.mutate()}
+              disabled={bookmarkMutation.isPending}
+              data-testid="button-bookmark"
+            >
+              <Bookmark className={`w-5 h-5 ${isBookmarked ? "fill-current" : ""}`} />
             </Button>
           </div>
 

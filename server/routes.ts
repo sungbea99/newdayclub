@@ -462,6 +462,43 @@ export async function registerRoutes(
     }
   });
 
+  // Bookmark routes
+  app.get("/api/bookmarks", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const itemType = req.query.type as string | undefined;
+      const bookmarks = await storage.getBookmarks(userId, itemType);
+      res.json(bookmarks);
+    } catch (error) {
+      console.error("Error fetching bookmarks:", error);
+      res.status(500).json({ message: "Failed to fetch bookmarks" });
+    }
+  });
+
+  app.post("/api/bookmarks", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { itemType, itemId } = req.body;
+      const isBookmarked = await storage.toggleBookmark(userId, itemType, itemId);
+      res.json({ isBookmarked });
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+      res.status(500).json({ message: "Failed to toggle bookmark" });
+    }
+  });
+
+  app.get("/api/bookmarks/check", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { itemType, itemId } = req.query;
+      const isBookmarked = await storage.hasUserBookmarked(userId, itemType as string, itemId as string);
+      res.json({ isBookmarked });
+    } catch (error) {
+      console.error("Error checking bookmark:", error);
+      res.status(500).json({ message: "Failed to check bookmark" });
+    }
+  });
+
   // Friends routes
   app.get("/api/friends", isAuthenticated, async (req: any, res) => {
     try {
