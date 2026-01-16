@@ -180,9 +180,8 @@ export default function Landing() {
                 variants={fadeInUp}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               >
-                <span className="text-foreground/60">뉴데이클럽에서</span><br />
-                <span className="text-foreground/60">함께 만들어가는</span><br />
-                <span className="text-primary">새로운 하루</span>
+                <span className="text-foreground/80">매일을 새롭게,</span><br />
+                <span className="text-primary">뉴데이클럽</span><span className="text-foreground/80">과 함께</span>
               </motion.h1>
               
               <motion.p 
@@ -195,18 +194,18 @@ export default function Landing() {
               
               <motion.div 
                 variants={fadeInUp}
-                className="flex flex-col sm:flex-row gap-3 pt-2"
+                className="flex flex-col sm:flex-row gap-4 pt-4"
               >
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button size="lg" asChild data-testid="button-cta-main">
+                  <Button size="lg" className="text-lg px-10 py-7 h-auto" asChild data-testid="button-cta-main">
                     <a href="/api/login">
                       무료로 시작하기
-                      <ArrowRight className="ml-2 w-4 h-4" />
+                      <ArrowRight className="ml-2 w-5 h-5" />
                     </a>
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button size="lg" variant="outline" asChild>
+                  <Button size="lg" variant="outline" className="text-lg px-8 py-7 h-auto" asChild>
                     <a href="#how-it-works">이용 방법 보기</a>
                   </Button>
                 </motion.div>
@@ -390,33 +389,27 @@ export default function Landing() {
             {[
               { 
                 title: "망설이던 버킷리스트 실현", 
-                desc: "혼자 가기 망설여졌던 해외여행, 스카이다이빙, 등산... 함께할 동행자가 있다면 도전할 용기가 생깁니다.",
-                highlight: "평균 3명의 동행자와 첫 활동 참여"
+                desc: "혼자 가기 망설여졌던 해외여행, 스카이다이빙, 등산... 함께할 동행자가 있다면 도전할 용기가 생깁니다."
               },
               { 
                 title: "진정한 또래 친구 만들기", 
-                desc: "같은 시대를 살아온 또래와 공감대를 나누고, 인생 후반전을 함께할 진정한 친구를 만들어보세요.",
-                highlight: "회원 78%가 정기적 모임 형성"
+                desc: "같은 시대를 살아온 또래와 공감대를 나누고, 인생 후반전을 함께할 진정한 친구를 만들어보세요."
               },
               { 
                 title: "새로운 취미 발견", 
-                desc: "관심은 있었지만 시작하지 못했던 새로운 취미. 경험자와 함께라면 쉽게 시작할 수 있습니다.",
-                highlight: "평균 2.5개의 새로운 취미 시작"
+                desc: "관심은 있었지만 시작하지 못했던 새로운 취미. 경험자와 함께라면 쉽게 시작할 수 있습니다."
               },
               { 
                 title: "활력 넘치는 일상", 
-                desc: "매주 새로운 활동 일정이 생기고, 기다려지는 약속이 생깁니다. 활기찬 하루하루를 경험하세요.",
-                highlight: "주 평균 2회 이상 활동 참여"
+                desc: "매주 새로운 활동 일정이 생기고, 기다려지는 약속이 생깁니다. 활기찬 하루하루를 경험하세요."
               },
               { 
                 title: "안전하고 건강한 사회생활", 
-                desc: "검증된 회원들과 건강한 관계를 맺고, 서로 응원하며 성장하는 커뮤니티에 함께하세요.",
-                highlight: "100% 본인 인증 완료 회원"
+                desc: "검증된 회원들과 건강한 관계를 맺고, 서로 응원하며 성장하는 커뮤니티에 함께하세요."
               },
               { 
                 title: "풍부한 인생 경험 공유", 
-                desc: "각자의 전문 분야와 인생 경험을 나누며, 배움과 가르침이 있는 뜻깊은 만남을 가져보세요.",
-                highlight: "다양한 직업군 회원 3,000명+"
+                desc: "각자의 전문 분야와 인생 경험을 나누며, 배움과 가르침이 있는 뜻깊은 만남을 가져보세요."
               }
             ].map((item, i) => (
               <motion.div
@@ -426,11 +419,7 @@ export default function Landing() {
                 className="p-6 rounded-2xl bg-card border border-border"
               >
                 <h3 className="text-lg font-bold mb-3 text-foreground">{item.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{item.desc}</p>
-                <div className="flex items-center gap-2 text-xs font-medium text-primary">
-                  <CheckCircle className="w-4 h-4" />
-                  {item.highlight}
-                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -486,28 +475,16 @@ export default function Landing() {
               variants={fadeInRight}
               className="relative"
             >
-              <div className="bg-card rounded-2xl p-8 border border-border shadow-lg">
-                <div className="text-center mb-6">
-                  <div className="text-5xl font-bold text-primary mb-2">97%</div>
-                  <p className="text-muted-foreground">회원 만족도</p>
-                </div>
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="text-center p-4 rounded-xl bg-muted/50">
-                    <div className="text-2xl font-bold text-foreground mb-1">15,000+</div>
-                    <p className="text-sm text-muted-foreground">누적 활동 수</p>
-                  </div>
-                  <div className="text-center p-4 rounded-xl bg-muted/50">
-                    <div className="text-2xl font-bold text-foreground mb-1">8,500+</div>
-                    <p className="text-sm text-muted-foreground">활동 회원</p>
-                  </div>
-                  <div className="text-center p-4 rounded-xl bg-muted/50">
-                    <div className="text-2xl font-bold text-foreground mb-1">4.8/5</div>
-                    <p className="text-sm text-muted-foreground">평균 활동 평점</p>
-                  </div>
-                  <div className="text-center p-4 rounded-xl bg-muted/50">
-                    <div className="text-2xl font-bold text-foreground mb-1">92%</div>
-                    <p className="text-sm text-muted-foreground">재참여율</p>
-                  </div>
+              <div className="rounded-2xl overflow-hidden shadow-xl">
+                <img 
+                  src={activeSeniorsImage} 
+                  alt="함께하는 즐거움" 
+                  className="w-full h-80 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent rounded-2xl" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <p className="text-lg font-medium">새로운 인연, 새로운 경험</p>
+                  <p className="text-white/80 text-sm">뉴데이클럽에서 시작하세요</p>
                 </div>
               </div>
             </motion.div>
