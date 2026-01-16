@@ -141,8 +141,11 @@ export default function Home() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                안녕하세요, {user?.firstName || "회원"}님
+                안녕하세요, {profile?.nickname || user?.firstName || "회원"}님
               </h1>
+              <p className="text-sm text-primary font-medium mb-1">
+                대표 5060 여가생활 커뮤니티
+              </p>
               <p className="text-muted-foreground">
                 오늘도 즐거운 동행을 찾아보세요!
               </p>
