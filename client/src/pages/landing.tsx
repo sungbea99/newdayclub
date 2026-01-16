@@ -29,10 +29,13 @@ import concertImage from "@assets/generated_images/concert_performance_illustrat
 import hikingImage from "@assets/generated_images/outdoor_hiking_illustration.png";
 import diningImage from "@assets/generated_images/food_dining_illustration.png";
 import travelImage from "@assets/generated_images/travel_tourism_illustration.png";
-import socialImage from "@assets/generated_images/social_gathering_illustration.png";
-import sportsImage from "@assets/generated_images/sports_activity_illustration.png";
-import educationImage from "@assets/generated_images/education_learning_illustration.png";
-import culturalImage from "@assets/generated_images/cultural_activities_illustration.png";
+
+import stockTravelImage from "@assets/stock_images/senior_adults_travel_9db88506.jpg";
+import stockSocialImage from "@assets/stock_images/senior_friends_laugh_6efa6349.jpg";
+import stockHobbyImage from "@assets/stock_images/senior_adults_hobby__ff19c9fa.jpg";
+import stockExerciseImage from "@assets/stock_images/active_seniors_exerc_0804e126.jpg";
+import stockCommunityImage from "@assets/stock_images/senior_community_gro_c21774e8.jpg";
+import stockMentorImage from "@assets/stock_images/senior_mentor_teachi_39f70c6f.jpg";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -401,42 +404,42 @@ export default function Landing() {
                 title: "망설이던 버킷리스트 실현", 
                 desc: "혼자 가기 망설여졌던 해외여행, 스카이다이빙, 등산... 함께할 동행자가 있다면 도전할 용기가 생깁니다.",
                 icon: Rocket,
-                image: travelImage,
+                image: stockTravelImage,
                 color: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400"
               },
               { 
                 title: "진정한 또래 친구 만들기", 
                 desc: "같은 시대를 살아온 또래와 공감대를 나누고, 인생 후반전을 함께할 진정한 친구를 만들어보세요.",
                 icon: UserPlus,
-                image: socialImage,
+                image: stockSocialImage,
                 color: "bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400"
               },
               { 
                 title: "새로운 취미 발견", 
                 desc: "관심은 있었지만 시작하지 못했던 새로운 취미. 경험자와 함께라면 쉽게 시작할 수 있습니다.",
                 icon: Sparkles,
-                image: culturalImage,
+                image: stockHobbyImage,
                 color: "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
               },
               { 
                 title: "활력 넘치는 일상", 
                 desc: "매주 새로운 활동 일정이 생기고, 기다려지는 약속이 생깁니다. 활기찬 하루하루를 경험하세요.",
                 icon: Zap,
-                image: sportsImage,
+                image: stockExerciseImage,
                 color: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400"
               },
               { 
                 title: "안전하고 건강한 사회생활", 
                 desc: "검증된 회원들과 건강한 관계를 맺고, 서로 응원하며 성장하는 커뮤니티에 함께하세요.",
                 icon: ShieldCheck,
-                image: hikingImage,
+                image: stockCommunityImage,
                 color: "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
               },
               { 
                 title: "풍부한 인생 경험 공유", 
                 desc: "각자의 전문 분야와 인생 경험을 나누며, 배움과 가르침이 있는 뜻깊은 만남을 가져보세요.",
                 icon: BookOpen,
-                image: educationImage,
+                image: stockMentorImage,
                 color: "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
               }
             ].map((item, i) => (
