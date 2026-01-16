@@ -194,7 +194,7 @@ export default function Landing() {
                 variants={fadeInUp}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               >
-                <span className="text-foreground/80">함께하는 즐거움</span><br />
+                <span className="text-foreground/80">나누면 커지는 행복</span><br />
                 <span className="text-primary">동락</span>
               </motion.h1>
               
