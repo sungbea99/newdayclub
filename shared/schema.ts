@@ -9,7 +9,7 @@ export * from "./models/auth";
 // Interest categories for matching
 export const INTEREST_CATEGORIES = [
   "공연/전시",
-  "아웃도어",
+  "걷기/트레킹",
   "스포츠",
   "문화생활",
   "교육/자기계발",
