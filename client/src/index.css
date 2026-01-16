@@ -43,8 +43,8 @@
   --chart-3: 210 45% 55%;
   --chart-4: 45 85% 55%;
   --chart-5: 340 65% 55%;
-  --font-sans: 'Noto Sans KR', sans-serif;
-  --font-serif: 'Noto Serif KR', Georgia, serif;
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-serif: 'Pretendard', Georgia, serif;
   --font-mono: Menlo, monospace;
   --radius: .5rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);

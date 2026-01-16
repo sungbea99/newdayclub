@@ -21,22 +21,22 @@ export default function Landing() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-                <Users className="w-5 h-5 text-primary-foreground" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
+                <Users className="w-4.5 h-4.5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl text-foreground">뉴데이클럽</span>
+              <span className="font-semibold text-lg text-foreground tracking-tight">뉴데이클럽</span>
             </div>
             
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">기능소개</a>
-              <a href="#categories" className="text-muted-foreground hover:text-foreground transition-colors">카테고리</a>
-              <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">이용방법</a>
+            <div className="hidden md:flex items-center gap-6">
+              <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">기능소개</a>
+              <a href="#categories" className="text-sm text-muted-foreground hover:text-foreground transition-colors">카테고리</a>
+              <a href="#how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">이용방법</a>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <ThemeToggle />
-              <Button asChild data-testid="button-login">
+              <Button size="sm" asChild data-testid="button-login">
                 <a href="/api/login">시작하기</a>
               </Button>
             </div>
@@ -44,49 +44,49 @@ export default function Landing() {
         </div>
       </nav>
 
-      <section className="pt-32 pb-20 px-4 md:px-6">
+      <section className="pt-28 pb-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
-                <Star className="w-4 h-4" />
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-medium">
+                <Star className="w-3.5 h-3.5" />
                 대표 5060 여가생활 커뮤니티 뉴데이클럽
               </div>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight font-serif">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground leading-snug tracking-tight">
                 취향이 맞는<br />
                 <span className="text-primary">동행자</span>를 찾아<br />
                 함께 즐기세요
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground max-w-lg">
+              <p className="text-base md:text-lg text-muted-foreground max-w-md leading-relaxed">
                 공연, 트레킹, 스포츠 등 다양한 여가활동을 함께할 
                 취향이 맞는 동행자를 찾고, 새로운 인연을 만들어보세요.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="text-lg px-8 py-6" asChild data-testid="button-cta-main">
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Button size="lg" asChild data-testid="button-cta-main">
                   <a href="/api/login">
                     무료로 시작하기
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <ArrowRight className="ml-2 w-4 h-4" />
                   </a>
                 </Button>
-                <Button size="lg" variant="outline" className="text-lg px-8 py-6" asChild>
+                <Button size="lg" variant="outline" asChild>
                   <a href="#how-it-works">이용 방법 보기</a>
                 </Button>
               </div>
               
-              <div className="flex flex-wrap items-center gap-6 pt-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="w-5 h-5 text-accent" />
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <CheckCircle className="w-4 h-4 text-accent" />
                   본인 인증된 회원만
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="w-5 h-5 text-accent" />
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <CheckCircle className="w-4 h-4 text-accent" />
                   안전한 만남 환경
                 </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CheckCircle className="w-5 h-5 text-accent" />
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <CheckCircle className="w-4 h-4 text-accent" />
                   무료 가입
                 </div>
               </div>
