@@ -173,14 +173,14 @@ export default function Landing() {
                 className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-medium"
               >
                 <Star className="w-3.5 h-3.5" />
-                대표 5060 여가생활 커뮤니티 뉴데이클럽
+                대표 5060 여가생활 커뮤니티
               </motion.div>
               
               <motion.h1 
                 variants={fadeInUp}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               >
-                <span className="text-foreground/80">매일을 새롭게,</span><br />
+                <span className="text-foreground/80">매일을 새롭게</span><br />
                 <span className="text-primary">뉴데이클럽</span><span className="text-foreground/80">과 함께</span>
               </motion.h1>
               
