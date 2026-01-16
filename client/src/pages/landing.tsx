@@ -24,18 +24,19 @@ import {
   BookOpen
 } from "lucide-react";
 import { INTEREST_CATEGORIES } from "@shared/schema";
-import activeSeniorsImage from "@assets/generated_images/active_seniors_hiking_together.png";
-import concertImage from "@assets/generated_images/concert_performance_illustration.png";
-import hikingImage from "@assets/generated_images/outdoor_hiking_illustration.png";
-import diningImage from "@assets/generated_images/food_dining_illustration.png";
-import travelImage from "@assets/generated_images/travel_tourism_illustration.png";
-
 import stockTravelImage from "@assets/stock_images/senior_adults_travel_9db88506.jpg";
 import stockSocialImage from "@assets/stock_images/senior_friends_laugh_6efa6349.jpg";
 import stockHobbyImage from "@assets/stock_images/senior_adults_hobby__ff19c9fa.jpg";
 import stockExerciseImage from "@assets/stock_images/active_seniors_exerc_0804e126.jpg";
 import stockCommunityImage from "@assets/stock_images/senior_community_gro_c21774e8.jpg";
 import stockMentorImage from "@assets/stock_images/senior_mentor_teachi_39f70c6f.jpg";
+
+import stockHikingImage from "@assets/stock_images/senior_adults_hiking_02d01d60.jpg";
+import stockConcertImage from "@assets/stock_images/senior_people_concer_2d83f980.jpg";
+import stockDiningImage from "@assets/stock_images/senior_friends_dinin_f3c99a0c.jpg";
+import stockGolfImage from "@assets/stock_images/seniors_golf_outdoor_6fc01691.jpg";
+import stockCookingImage from "@assets/stock_images/seniors_cooking_clas_78c8311b.jpg";
+import stockBeachImage from "@assets/stock_images/senior_friends_beach_81b9adef.jpg";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -261,7 +262,7 @@ export default function Landing() {
                 />
                 <div className="absolute inset-4 bg-card rounded-2xl shadow-xl overflow-hidden">
                   <motion.img 
-                    src={activeSeniorsImage} 
+                    src={stockHikingImage} 
                     alt="함께 여가생활을 즐기는 5060 시니어" 
                     className="w-full h-full object-cover"
                     initial={{ scale: 1.1 }}
@@ -355,7 +356,7 @@ export default function Landing() {
                 animate={{ x: [0, -1200] }}
                 transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               >
-                {[concertImage, hikingImage, diningImage, travelImage, activeSeniorsImage, concertImage, hikingImage, diningImage].map((img, i) => (
+                {[stockConcertImage, stockHikingImage, stockDiningImage, stockTravelImage, stockGolfImage, stockCookingImage, stockBeachImage, stockSocialImage].map((img, i) => (
                   <div 
                     key={i} 
                     className="w-72 h-48 rounded-2xl overflow-hidden shadow-lg"
@@ -521,7 +522,7 @@ export default function Landing() {
             >
               <div className="rounded-2xl overflow-hidden shadow-xl">
                 <img 
-                  src={activeSeniorsImage} 
+                  src={stockSocialImage} 
                   alt="함께하는 즐거움" 
                   className="w-full h-80 object-cover"
                 />
@@ -655,25 +656,25 @@ export default function Landing() {
                   className="rounded-2xl overflow-hidden shadow-xl"
                   whileHover={{ scale: 1.03 }}
                 >
-                  <img src={concertImage} alt="공연 관람" className="w-full h-48 object-cover" />
+                  <img src={stockConcertImage} alt="공연 관람" className="w-full h-48 object-cover" />
                 </motion.div>
                 <motion.div 
                   className="rounded-2xl overflow-hidden shadow-xl mt-8"
                   whileHover={{ scale: 1.03 }}
                 >
-                  <img src={hikingImage} alt="트레킹" className="w-full h-48 object-cover" />
+                  <img src={stockHikingImage} alt="트레킹" className="w-full h-48 object-cover" />
                 </motion.div>
                 <motion.div 
                   className="rounded-2xl overflow-hidden shadow-xl"
                   whileHover={{ scale: 1.03 }}
                 >
-                  <img src={diningImage} alt="맛집 탐방" className="w-full h-48 object-cover" />
+                  <img src={stockDiningImage} alt="맛집 탐방" className="w-full h-48 object-cover" />
                 </motion.div>
                 <motion.div 
                   className="rounded-2xl overflow-hidden shadow-xl mt-8"
                   whileHover={{ scale: 1.03 }}
                 >
-                  <img src={travelImage} alt="여행" className="w-full h-48 object-cover" />
+                  <img src={stockTravelImage} alt="여행" className="w-full h-48 object-cover" />
                 </motion.div>
               </div>
             </motion.div>
