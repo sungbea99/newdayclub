@@ -180,15 +180,21 @@ export default function Landing() {
                 variants={fadeInUp}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight tracking-tight"
               >
-                취향이 맞는<br />
+                뉴데이클럽에서<br />
+                함께 만들어가는<br />
                 <motion.span 
-                  className="text-primary inline-block"
-                  animate={{ scale: [1, 1.02, 1] }}
+                  className="text-primary inline-block relative"
+                  animate={{ scale: [1, 1.03, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  동행자
-                </motion.span>를 찾아<br />
-                함께 즐기세요
+                  새로운 하루
+                  <motion.span 
+                    className="absolute -bottom-1 left-0 right-0 h-1 bg-primary/40 rounded-full"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 0.8, duration: 0.6 }}
+                  />
+                </motion.span>
               </motion.h1>
               
               <motion.p 
