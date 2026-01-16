@@ -118,8 +118,8 @@ export default function ProfileEdit() {
     saveMutation.mutate(data);
   };
 
-  const currentYear = new Date().getFullYear();
-  const birthYears = Array.from({ length: 51 }, (_, i) => currentYear - 50 - i);
+  // 1987년부터 1940년까지 (50-60대 시니어 대상 + 여유 범위)
+  const birthYears = Array.from({ length: 48 }, (_, i) => 1987 - i);
 
   return (
     <div className="max-w-2xl mx-auto px-4 md:px-6 py-8 pb-24 md:pb-8">
