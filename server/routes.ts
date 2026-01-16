@@ -77,6 +77,41 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/profiles/verify-phone", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.updateProfile(userId, { isPhoneVerified: true });
+      res.json(profile);
+    } catch (error) {
+      console.error("Error verifying phone:", error);
+      res.status(500).json({ message: "Failed to verify phone" });
+    }
+  });
+
+  app.post("/api/profiles/verify-photo", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { imageUrl } = req.body;
+      
+      let profile = await storage.getProfile(userId);
+      if (!profile) {
+        return res.status(404).json({ message: "Profile not found" });
+      }
+      
+      const profileImages = profile.profileImages || [];
+      profileImages.unshift(imageUrl);
+      
+      profile = await storage.updateProfile(userId, { 
+        profileImages: profileImages.slice(0, 5),
+        isPhotoVerified: true 
+      });
+      res.json(profile);
+    } catch (error) {
+      console.error("Error verifying photo:", error);
+      res.status(500).json({ message: "Failed to verify photo" });
+    }
+  });
+
   app.get("/api/profiles/:id/activities", async (req, res) => {
     try {
       const activities = await storage.getActivitiesByUser(req.params.id);
