@@ -52,6 +52,7 @@ export interface IStorage {
   
   // Likes and Comments
   toggleLike(postId: string, userId: string): Promise<boolean>;
+  hasUserLiked(postId: string, userId: string): Promise<boolean>;
   getComments(postId: string): Promise<PostComment[]>;
   createComment(comment: InsertComment): Promise<PostComment>;
   
@@ -306,6 +307,15 @@ export class DatabaseStorage implements IStorage {
         .where(eq(communityPosts.id, postId));
       return true;
     }
+  }
+
+  async hasUserLiked(postId: string, userId: string): Promise<boolean> {
+    const [existing] = await db.select().from(postLikes)
+      .where(and(
+        eq(postLikes.postId, postId),
+        eq(postLikes.userId, userId)
+      ));
+    return !!existing;
   }
 
   // Comments

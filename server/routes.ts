@@ -332,16 +332,23 @@ export async function registerRoutes(
     }
   });
 
+  // Helper function to enrich posts with author and like status
+  async function enrichPosts(posts: any[], userId?: string) {
+    return Promise.all(
+      posts.map(async (post) => {
+        const author = await storage.getProfile(post.authorId);
+        const isLikedByMe = userId ? await storage.hasUserLiked(post.id, userId) : false;
+        return { ...post, author, isLikedByMe };
+      })
+    );
+  }
+
   // Community routes - specific routes must come before :id routes
-  app.get("/api/community/recommended", async (req, res) => {
+  app.get("/api/community/recommended", async (req: any, res) => {
     try {
+      const userId = req.user?.claims?.sub;
       const posts = await storage.getCommunityPosts();
-      const enrichedPosts = await Promise.all(
-        posts.map(async (post) => {
-          const author = await storage.getProfile(post.authorId);
-          return { ...post, author };
-        })
-      );
+      const enrichedPosts = await enrichPosts(posts, userId);
       res.json(enrichedPosts);
     } catch (error) {
       console.error("Error fetching recommended posts:", error);
@@ -349,17 +356,13 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/community/popular", async (req, res) => {
+  app.get("/api/community/popular", async (req: any, res) => {
     try {
+      const userId = req.user?.claims?.sub;
       const posts = await storage.getCommunityPosts();
       // Sort by likes count for popular
       const sortedPosts = posts.sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0));
-      const enrichedPosts = await Promise.all(
-        sortedPosts.map(async (post) => {
-          const author = await storage.getProfile(post.authorId);
-          return { ...post, author };
-        })
-      );
+      const enrichedPosts = await enrichPosts(sortedPosts, userId);
       res.json(enrichedPosts);
     } catch (error) {
       console.error("Error fetching popular posts:", error);
@@ -376,12 +379,7 @@ export async function registerRoutes(
       const posts = await storage.getCommunityPosts();
       const followingPosts = posts.filter(post => friendIds.includes(post.authorId));
       
-      const enrichedPosts = await Promise.all(
-        followingPosts.map(async (post) => {
-          const author = await storage.getProfile(post.authorId);
-          return { ...post, author };
-        })
-      );
+      const enrichedPosts = await enrichPosts(followingPosts, userId);
       res.json(enrichedPosts);
     } catch (error) {
       console.error("Error fetching following posts:", error);
@@ -434,7 +432,14 @@ export async function registerRoutes(
   app.get("/api/community/:id/comments", async (req, res) => {
     try {
       const comments = await storage.getComments(req.params.id);
-      res.json(comments);
+      // Enrich comments with author info
+      const enrichedComments = await Promise.all(
+        comments.map(async (comment) => {
+          const author = await storage.getProfile(comment.authorId);
+          return { ...comment, author };
+        })
+      );
+      res.json(enrichedComments);
     } catch (error) {
       console.error("Error fetching comments:", error);
       res.status(500).json({ message: "Failed to fetch comments" });

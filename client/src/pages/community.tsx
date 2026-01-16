@@ -39,16 +39,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-function PostCard({ post }: { post: CommunityPost & { author?: Profile } }) {
+function PostCard({ post }: { post: CommunityPost & { author?: Profile; isLikedByMe?: boolean } }) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [isLiked, setIsLiked] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
 
   const likeMutation = useMutation({
     mutationFn: () => apiRequest("POST", `/api/community/${post.id}/like`),
     onSuccess: () => {
-      setIsLiked(!isLiked);
       queryClient.invalidateQueries({ queryKey: ["/api/community"] });
+    },
+  });
+
+  const { data: comments } = useQuery<any[]>({
+    queryKey: ["/api/community", post.id, "comments"],
+    enabled: showComments,
+  });
+
+  const commentMutation = useMutation({
+    mutationFn: () => apiRequest("POST", `/api/community/${post.id}/comments`, { content: commentText }),
+    onSuccess: () => {
+      setCommentText("");
+      queryClient.invalidateQueries({ queryKey: ["/api/community", post.id, "comments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/community"] });
+      toast({ title: "댓글이 등록되었습니다." });
     },
   });
 
@@ -108,14 +123,21 @@ function PostCard({ post }: { post: CommunityPost & { author?: Profile } }) {
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`gap-2 ${isLiked ? "text-red-500" : ""}`}
+              className={`gap-2 ${post.isLikedByMe ? "text-red-500" : ""}`}
               onClick={() => likeMutation.mutate()}
+              disabled={likeMutation.isPending}
               data-testid="button-like"
             >
-              <Heart className={`w-5 h-5 ${isLiked ? "fill-current" : ""}`} />
-              <span>{(post.likesCount || 0) + (isLiked ? 1 : 0)}</span>
+              <Heart className={`w-5 h-5 ${post.isLikedByMe ? "fill-current" : ""}`} />
+              <span>{post.likesCount || 0}</span>
             </Button>
-            <Button variant="ghost" size="sm" className="gap-2" data-testid="button-comment">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="gap-2" 
+              onClick={() => setShowComments(!showComments)}
+              data-testid="button-comment"
+            >
               <MessageCircle className="w-5 h-5" />
               <span>{post.commentsCount || 0}</span>
             </Button>
@@ -139,6 +161,58 @@ function PostCard({ post }: { post: CommunityPost & { author?: Profile } }) {
             <p className="text-sm text-primary mt-2">
               {post.tags.map((tag) => `#${tag}`).join(" ")}
             </p>
+          )}
+
+          {showComments && (
+            <div className="mt-4 pt-4 border-t border-border">
+              <div className="flex gap-2 mb-4">
+                <Textarea
+                  placeholder="댓글을 입력하세요..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  className="min-h-[60px] text-sm"
+                  data-testid="input-comment"
+                />
+                <Button 
+                  size="sm"
+                  onClick={() => commentMutation.mutate()}
+                  disabled={!commentText.trim() || commentMutation.isPending}
+                  data-testid="button-submit-comment"
+                >
+                  등록
+                </Button>
+              </div>
+              
+              {comments && comments.length > 0 ? (
+                <div className="space-y-3">
+                  {comments.map((comment: any) => (
+                    <div key={comment.id} className="flex gap-2" data-testid={`comment-${comment.id}`}>
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+                          {comment.author?.nickname?.charAt(0) || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-sm">
+                          <span className="font-medium mr-2">{comment.author?.nickname || "익명"}</span>
+                          {comment.content}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {comment.createdAt && formatDistanceToNow(new Date(comment.createdAt), { 
+                            addSuffix: true, 
+                            locale: ko 
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-2">
+                  첫 댓글을 남겨보세요!
+                </p>
+              )}
+            </div>
           )}
         </div>
       </CardContent>
