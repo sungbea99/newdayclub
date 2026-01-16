@@ -1,4 +1,4 @@
-# ActiveSenior Design Guidelines
+# 뉴데이클럽 Design Guidelines
 
 ## Design Approach
 

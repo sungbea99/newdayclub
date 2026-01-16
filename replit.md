@@ -1,8 +1,8 @@
-# ActiveSenior - 액티브 시니어 여가생활 매칭 플랫폼
+# 뉴데이클럽 - 액티브 시니어 여가생활 매칭 플랫폼
 
 ## Overview
 
-ActiveSenior is a leisure activity matching platform designed specifically for active seniors (ages 50-60). The platform enables users to discover companions with similar interests for activities like performances, trekking, sports, and cultural events. The application features profile matching, activity discovery, real-time chat, and community engagement.
+뉴데이클럽 (New Day Club) is a leisure activity matching platform designed specifically for active seniors (ages 50-60). The platform enables users to discover companions with similar interests for activities like performances, trekking, sports, and cultural events. The application features profile matching, activity discovery, real-time chat, and community engagement.
 
 The project follows a monorepo structure with a React frontend, Express backend, and PostgreSQL database using Drizzle ORM.
 

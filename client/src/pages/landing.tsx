@@ -24,7 +24,7 @@ export default function Landing() {
               <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
                 <Users className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="font-bold text-xl text-foreground">ActiveSenior</span>
+              <span className="font-bold text-xl text-foreground">뉴데이클럽</span>
             </div>
             
             <div className="hidden md:flex items-center gap-8">
