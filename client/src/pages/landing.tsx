@@ -180,8 +180,8 @@ export default function Landing() {
                 variants={fadeInUp}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               >
-                <span className="text-muted-foreground/70">뉴데이클럽에서</span><br />
-                <span className="text-muted-foreground/70">함께 만들어가는</span><br />
+                <span className="text-foreground/60">뉴데이클럽에서</span><br />
+                <span className="text-foreground/60">함께 만들어가는</span><br />
                 <span className="text-primary">새로운 하루</span>
               </motion.h1>
               
