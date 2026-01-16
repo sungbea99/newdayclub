@@ -17,8 +17,8 @@ export const INTEREST_CATEGORIES = [
   "기타취미"
 ] as const;
 
-export const ACTIVITY_FREQUENCY = ["주 1회", "월 2-3회", "월 1회", "비정기적"] as const;
-export const PREFERRED_TIME = ["오전", "오후", "저녁", "주말"] as const;
+export const ACTIVITY_FREQUENCY = ["주 3회 이상", "주 1~2회", "월 3~4회", "월 2회 이하"] as const;
+export const PREFERRED_TIME = ["평일 오전", "평일 오후", "평일 저녁", "주말 오전", "주말 오후", "주말 저녁"] as const;
 export const GROUP_SIZE = ["2-3명", "4-5명", "6명 이상"] as const;
 export const GENDER_PREFERENCE = ["무관", "동성만", "혼성"] as const;
 export const ACTIVITY_STYLES = [
