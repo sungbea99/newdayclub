@@ -332,7 +332,63 @@ export async function registerRoutes(
     }
   });
 
-  // Community routes
+  // Community routes - specific routes must come before :id routes
+  app.get("/api/community/recommended", async (req, res) => {
+    try {
+      const posts = await storage.getCommunityPosts();
+      const enrichedPosts = await Promise.all(
+        posts.map(async (post) => {
+          const author = await storage.getProfile(post.authorId);
+          return { ...post, author };
+        })
+      );
+      res.json(enrichedPosts);
+    } catch (error) {
+      console.error("Error fetching recommended posts:", error);
+      res.status(500).json({ message: "Failed to fetch posts" });
+    }
+  });
+
+  app.get("/api/community/popular", async (req, res) => {
+    try {
+      const posts = await storage.getCommunityPosts();
+      // Sort by likes count for popular
+      const sortedPosts = posts.sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0));
+      const enrichedPosts = await Promise.all(
+        sortedPosts.map(async (post) => {
+          const author = await storage.getProfile(post.authorId);
+          return { ...post, author };
+        })
+      );
+      res.json(enrichedPosts);
+    } catch (error) {
+      console.error("Error fetching popular posts:", error);
+      res.status(500).json({ message: "Failed to fetch posts" });
+    }
+  });
+
+  app.get("/api/community/following", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const friends = await storage.getFriends(userId);
+      const friendIds = friends.map(f => f.friendId);
+      
+      const posts = await storage.getCommunityPosts();
+      const followingPosts = posts.filter(post => friendIds.includes(post.authorId));
+      
+      const enrichedPosts = await Promise.all(
+        followingPosts.map(async (post) => {
+          const author = await storage.getProfile(post.authorId);
+          return { ...post, author };
+        })
+      );
+      res.json(enrichedPosts);
+    } catch (error) {
+      console.error("Error fetching following posts:", error);
+      res.status(500).json({ message: "Failed to fetch posts" });
+    }
+  });
+
   app.get("/api/community", async (req, res) => {
     try {
       const type = req.query.type as string | undefined;
