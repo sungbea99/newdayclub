@@ -137,7 +137,12 @@ export async function registerRoutes(
   app.post("/api/activities", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const activity = await storage.createActivity({ ...req.body, authorId: userId });
+      const activityData = {
+        ...req.body,
+        authorId: userId,
+        activityDate: req.body.activityDate ? new Date(req.body.activityDate) : undefined,
+      };
+      const activity = await storage.createActivity(activityData);
       res.json(activity);
     } catch (error) {
       console.error("Error creating activity:", error);
