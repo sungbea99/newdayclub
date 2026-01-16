@@ -28,7 +28,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowLeft, CalendarDays, MapPin, Users, DollarSign } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Users, DollarSign, ImagePlus } from "lucide-react";
+import { getCategoryImage } from "@/components/category-images";
 
 const activityFormSchema = z.object({
   title: z.string().min(5, "제목은 5자 이상이어야 합니다").max(200),
@@ -42,6 +43,7 @@ const activityFormSchema = z.object({
   genderRestriction: z.string().optional(),
   activityLevel: z.string().optional(),
   tags: z.string().optional(),
+  imageUrl: z.string().url().optional().or(z.literal("")),
   isFriendsOnly: z.boolean().default(false),
 });
 
@@ -65,9 +67,13 @@ export default function ActivityNew() {
       genderRestriction: "무관",
       activityLevel: "무관",
       tags: "",
+      imageUrl: "",
       isFriendsOnly: false,
     },
   });
+
+  const selectedCategory = form.watch("category");
+  const imageUrl = form.watch("imageUrl");
 
   const createMutation = useMutation({
     mutationFn: (data: ActivityFormValues) => {
@@ -75,6 +81,7 @@ export default function ActivityNew() {
         ...data,
         activityDate: new Date(data.activityDate).toISOString(),
         tags: data.tags ? data.tags.split(",").map((t) => t.trim()) : [],
+        images: data.imageUrl ? [data.imageUrl] : [],
       };
       return apiRequest("POST", "/api/activities", payload);
     },
@@ -180,6 +187,44 @@ export default function ActivityNew() {
                         data-testid="input-description"
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <ImagePlus className="w-5 h-5" />
+                대표 이미지
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="aspect-video rounded-xl overflow-hidden bg-muted">
+                <img 
+                  src={imageUrl || (selectedCategory ? getCategoryImage(selectedCategory) : getCategoryImage("소모임"))} 
+                  alt="대표 이미지 미리보기"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이미지 URL (선택)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="https://example.com/image.jpg" 
+                        {...field} 
+                        data-testid="input-image-url"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      이미지를 등록하지 않으면 카테고리에 맞는 기본 이미지가 표시됩니다
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

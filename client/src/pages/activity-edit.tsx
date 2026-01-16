@@ -27,7 +27,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ImagePlus } from "lucide-react";
+import { getCategoryImage } from "@/components/category-images";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 
@@ -43,6 +44,7 @@ const activityFormSchema = z.object({
   genderRestriction: z.string().optional(),
   activityLevel: z.string().optional(),
   tags: z.string().optional(),
+  imageUrl: z.string().url().optional().or(z.literal("")),
   isFriendsOnly: z.boolean().default(false),
   status: z.string().optional(),
 });
@@ -75,10 +77,14 @@ export default function ActivityEdit() {
       genderRestriction: activity.genderRestriction || "무관",
       activityLevel: activity.activityLevel || "무관",
       tags: activity.tags?.join(", ") || "",
+      imageUrl: activity.images?.[0] || "",
       isFriendsOnly: activity.isFriendsOnly || false,
       status: activity.status || "모집중",
     } : undefined,
   });
+
+  const selectedCategory = form.watch("category");
+  const imageUrl = form.watch("imageUrl");
 
   const updateMutation = useMutation({
     mutationFn: (data: ActivityFormValues) => {
@@ -86,6 +92,7 @@ export default function ActivityEdit() {
         ...data,
         activityDate: new Date(data.activityDate).toISOString(),
         tags: data.tags ? data.tags.split(",").map((t) => t.trim()) : [],
+        images: data.imageUrl ? [data.imageUrl] : [],
       };
       return apiRequest("PATCH", `/api/activities/${id}`, payload);
     },
@@ -245,6 +252,44 @@ export default function ActivityEdit() {
                         data-testid="input-description"
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <ImagePlus className="w-5 h-5" />
+                대표 이미지
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="aspect-video rounded-xl overflow-hidden bg-muted">
+                <img 
+                  src={imageUrl || (selectedCategory ? getCategoryImage(selectedCategory) : getCategoryImage("소모임"))} 
+                  alt="대표 이미지 미리보기"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이미지 URL (선택)</FormLabel>
+                    <FormControl>
+                      <Input 
+                        placeholder="https://example.com/image.jpg" 
+                        {...field} 
+                        data-testid="input-image-url"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      이미지를 등록하지 않으면 카테고리에 맞는 기본 이미지가 표시됩니다
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

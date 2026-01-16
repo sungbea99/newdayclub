@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { CategoryBadge } from "@/components/category-icon";
+import { getCategoryImage } from "@/components/category-images";
 import { VerificationBadges } from "@/components/verification-badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -181,21 +182,13 @@ export default function ActivityDetail() {
         목록으로
       </Button>
 
-      {activity.images && activity.images.length > 0 ? (
-        <div className="aspect-video rounded-xl overflow-hidden mb-6 bg-muted">
-          <img 
-            src={activity.images[0]} 
-            alt={activity.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ) : (
-        <div className="aspect-video rounded-xl mb-6 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-          <div className="text-center">
-            <CategoryBadge category={activity.category} />
-          </div>
-        </div>
-      )}
+      <div className="aspect-video rounded-xl overflow-hidden mb-6 bg-muted">
+        <img 
+          src={activity.images?.[0] || getCategoryImage(activity.category)} 
+          alt={activity.title}
+          className="w-full h-full object-cover"
+        />
+      </div>
 
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <Badge className={statusColors[activity.status || "모집중"]}>

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CategoryIcon, CategoryBadge } from "@/components/category-icon";
+import { getCategoryImage } from "@/components/category-images";
 import { VerificationBadges } from "@/components/verification-badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
@@ -32,17 +33,11 @@ function ActivityCard({ activity, author }: { activity: Activity; author?: Profi
       <Card className="hover-elevate cursor-pointer h-full" data-testid={`activity-card-${activity.id}`}>
         <CardContent className="p-0">
           <div className="aspect-[4/3] bg-muted relative overflow-hidden rounded-t-lg">
-            {activity.images?.[0] ? (
-              <img 
-                src={activity.images[0]} 
-                alt={activity.title} 
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
-                <CategoryIcon category={activity.category} size="lg" />
-              </div>
-            )}
+            <img 
+              src={activity.images?.[0] || getCategoryImage(activity.category)} 
+              alt={activity.title} 
+              className="w-full h-full object-cover"
+            />
             <Badge 
               className={`absolute top-3 left-3 ${statusColors[activity.status || "모집중"]}`}
             >
@@ -234,16 +229,12 @@ export default function Home() {
               <Link key={activity.id} href={`/activities/${activity.id}`}>
                 <Card className="hover-elevate cursor-pointer" data-testid={`upcoming-${activity.id}`}>
                   <CardContent className="p-4 flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-muted flex items-center justify-center">
-                      {activity.images?.[0] ? (
-                        <img 
-                          src={activity.images[0]} 
-                          alt={activity.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <CategoryIcon category={activity.category} size="md" />
-                      )}
+                    <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-muted">
+                      <img 
+                        src={activity.images?.[0] || getCategoryImage(activity.category)} 
+                        alt={activity.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium truncate">{activity.title}</h3>
