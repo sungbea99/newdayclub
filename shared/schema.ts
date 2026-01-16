@@ -14,6 +14,8 @@ export const INTEREST_CATEGORIES = [
   "문화생활",
   "교육/자기계발",
   "봉사활동",
+  "여행",
+  "맛집",
   "기타취미"
 ] as const;
 

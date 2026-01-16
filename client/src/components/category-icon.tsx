@@ -6,6 +6,8 @@ import {
   GraduationCap, 
   Heart, 
   Palette,
+  Plane,
+  Utensils,
   LucideIcon
 } from "lucide-react";
 
@@ -16,6 +18,8 @@ const categoryIcons: Record<string, LucideIcon> = {
   "문화생활": Coffee,
   "교육/자기계발": GraduationCap,
   "봉사활동": Heart,
+  "여행": Plane,
+  "맛집": Utensils,
   "기타취미": Palette,
 };
 
@@ -26,6 +30,8 @@ const categoryColors: Record<string, string> = {
   "문화생활": "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
   "교육/자기계발": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
   "봉사활동": "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300",
+  "여행": "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300",
+  "맛집": "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
   "기타취미": "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300",
 };
 
