@@ -258,8 +258,8 @@ export default function ActivityDetail() {
                     <p className="font-medium">{author?.nickname || "익명"}</p>
                     <div className="flex items-center gap-1">
                       <VerificationBadges 
-                        isPhoneVerified={author?.isPhoneVerified}
-                        isPhotoVerified={author?.isPhotoVerified}
+                        isPhoneVerified={author?.isPhoneVerified ?? undefined}
+                        isPhotoVerified={author?.isPhotoVerified ?? undefined}
                         activityCount={author?.activityCount || 0}
                         averageRating={author?.averageRating || 0}
                       />

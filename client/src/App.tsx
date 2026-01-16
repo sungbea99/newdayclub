@@ -14,6 +14,8 @@ import Home from "@/pages/home";
 import Activities from "@/pages/activities";
 import ActivityDetail from "@/pages/activity-detail";
 import ActivityNew from "@/pages/activity-new";
+import ActivityEdit from "@/pages/activity-edit";
+import ActivityParticipants from "@/pages/activity-participants";
 import Profile from "@/pages/profile";
 import ProfileEdit from "@/pages/profile-edit";
 import Chat from "@/pages/chat";
@@ -50,6 +52,8 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/activities" component={Activities} />
         <Route path="/activities/new" component={ActivityNew} />
+        <Route path="/activities/:id/edit" component={ActivityEdit} />
+        <Route path="/activities/:id/participants" component={ActivityParticipants} />
         <Route path="/activities/:id" component={ActivityDetail} />
         <Route path="/profile" component={Profile} />
         <Route path="/profile/edit" component={ProfileEdit} />
