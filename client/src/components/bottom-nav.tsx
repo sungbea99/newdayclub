@@ -6,7 +6,7 @@ const navItems = [
   { path: "/activities", icon: Compass, label: "동행 찾기" },
   { path: "/chat", icon: MessageCircle, label: "채팅" },
   { path: "/community", icon: Users, label: "커뮤니티" },
-  { path: "/profile", icon: User, label: "MY" },
+  { path: "/profile", icon: User, label: "프로필" },
 ];
 
 export function BottomNav() {
