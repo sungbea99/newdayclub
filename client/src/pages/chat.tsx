@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -270,7 +270,16 @@ function ChatMessages({
 
 export default function Chat() {
   const { user } = useAuth();
-  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const searchString = useSearch();
+  const urlParams = new URLSearchParams(searchString);
+  const roomFromUrl = urlParams.get("room");
+  const [selectedRoom, setSelectedRoom] = useState<string | null>(roomFromUrl);
+
+  useEffect(() => {
+    if (roomFromUrl) {
+      setSelectedRoom(roomFromUrl);
+    }
+  }, [roomFromUrl]);
 
   const { data: rooms, isLoading } = useQuery<ChatRoom[]>({
     queryKey: ["/api/chat/rooms"],

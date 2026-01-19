@@ -538,17 +538,62 @@ export async function registerRoutes(
   app.get("/api/friends", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const friends = await storage.getFriends(userId);
-      res.json(friends);
+      const friendsList = await storage.getFriends(userId);
+      
+      const enrichedFriends = await Promise.all(
+        friendsList.map(async (friend) => {
+          const friendUserId = friend.userId === userId ? friend.friendId : friend.userId;
+          const profile = await storage.getProfile(friendUserId);
+          return { ...friend, profile };
+        })
+      );
+      
+      res.json(enrichedFriends);
     } catch (error) {
       console.error("Error fetching friends:", error);
       res.status(500).json({ message: "Failed to fetch friends" });
     }
   });
 
+  app.get("/api/friends/requests", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const requests = await storage.getFriendRequests(userId);
+      
+      const enrichedRequests = await Promise.all(
+        requests.map(async (request) => {
+          const profile = await storage.getProfile(request.userId);
+          return { ...request, profile };
+        })
+      );
+      
+      res.json(enrichedRequests);
+    } catch (error) {
+      console.error("Error fetching friend requests:", error);
+      res.status(500).json({ message: "Failed to fetch friend requests" });
+    }
+  });
+
+  app.get("/api/friends/status/:userId", isAuthenticated, async (req: any, res) => {
+    try {
+      const currentUserId = req.user.claims.sub;
+      const friendship = await storage.getFriendship(currentUserId, req.params.userId);
+      res.json({ friendship });
+    } catch (error) {
+      console.error("Error checking friendship:", error);
+      res.status(500).json({ message: "Failed to check friendship" });
+    }
+  });
+
   app.post("/api/friends", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      
+      const existing = await storage.getFriendship(userId, req.body.friendId);
+      if (existing) {
+        return res.status(400).json({ message: "Friend request already exists" });
+      }
+      
       const friend = await storage.createFriendRequest({
         userId,
         friendId: req.body.friendId,
@@ -570,6 +615,28 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating friend status:", error);
       res.status(500).json({ message: "Failed to update friend status" });
+    }
+  });
+
+  app.delete("/api/friends/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      await storage.deleteFriend(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting friend:", error);
+      res.status(500).json({ message: "Failed to delete friend" });
+    }
+  });
+
+  // Direct chat route
+  app.post("/api/chat/direct", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const room = await storage.getOrCreateDirectChat(userId, req.body.userId);
+      res.json(room);
+    } catch (error) {
+      console.error("Error creating direct chat:", error);
+      res.status(500).json({ message: "Failed to create direct chat" });
     }
   });
 

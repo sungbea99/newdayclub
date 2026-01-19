@@ -64,8 +64,14 @@ export interface IStorage {
   
   // Friends
   getFriends(userId: string): Promise<Friend[]>;
+  getFriendRequests(userId: string): Promise<Friend[]>;
+  getFriendship(userId: string, friendId: string): Promise<Friend | undefined>;
   createFriendRequest(friend: InsertFriend): Promise<Friend>;
   updateFriendStatus(id: string, status: string): Promise<Friend | undefined>;
+  deleteFriend(id: string): Promise<void>;
+  
+  // Direct chat
+  getOrCreateDirectChat(userId1: string, userId2: string): Promise<ChatRoom>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -400,6 +406,53 @@ export class DatabaseStorage implements IStorage {
       .where(eq(friends.id, id))
       .returning();
     return updated;
+  }
+
+  async getFriendRequests(userId: string): Promise<Friend[]> {
+    return db.select().from(friends)
+      .where(and(
+        eq(friends.friendId, userId),
+        eq(friends.status, "pending")
+      ));
+  }
+
+  async getFriendship(userId: string, friendId: string): Promise<Friend | undefined> {
+    const [existing] = await db.select().from(friends)
+      .where(or(
+        and(eq(friends.userId, userId), eq(friends.friendId, friendId)),
+        and(eq(friends.userId, friendId), eq(friends.friendId, userId))
+      ));
+    return existing;
+  }
+
+  async deleteFriend(id: string): Promise<void> {
+    await db.delete(friends).where(eq(friends.id, id));
+  }
+
+  async getOrCreateDirectChat(userId1: string, userId2: string): Promise<ChatRoom> {
+    const sortedParticipants = [userId1, userId2].sort();
+    
+    const existingRooms = await db.select().from(chatRooms)
+      .where(and(
+        eq(chatRooms.type, "direct"),
+        sql`${chatRooms.participants} @> ARRAY[${userId1}, ${userId2}]::text[]`
+      ));
+    
+    const existingRoom = existingRooms.find(room => {
+      const participants = room.participants || [];
+      return participants.length === 2;
+    });
+    
+    if (existingRoom) {
+      return existingRoom;
+    }
+    
+    const [newRoom] = await db.insert(chatRooms).values({
+      type: "direct",
+      participants: sortedParticipants,
+    }).returning();
+    
+    return newRoom;
   }
 }
 

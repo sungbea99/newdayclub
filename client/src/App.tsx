@@ -19,6 +19,7 @@ import Profile from "@/pages/profile";
 import ProfileEdit from "@/pages/profile-edit";
 import Chat from "@/pages/chat";
 import Community from "@/pages/community";
+import Friends from "@/pages/friends";
 import { Redirect } from "wouter";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -62,6 +63,7 @@ function Router() {
         <Route path="/profile/:id" component={Profile} />
         <Route path="/chat" component={Chat} />
         <Route path="/community" component={Community} />
+        <Route path="/friends" component={Friends} />
         <Route component={NotFound} />
       </Switch>
     </AuthenticatedLayout>

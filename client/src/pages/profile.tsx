@@ -1,4 +1,4 @@
-import { Link, useParams } from "wouter";
+import { Link, useParams, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,9 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CategoryBadge } from "@/components/category-icon";
 import { VerificationBadges } from "@/components/verification-badge";
 import { useAuth } from "@/hooks/use-auth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Profile, Activity, CommunityPost } from "@shared/schema";
+import type { Profile, Activity, CommunityPost, Friend } from "@shared/schema";
 import { 
   Edit, 
   MapPin, 
@@ -19,7 +21,10 @@ import {
   Grid3X3,
   List,
   MessageCircle,
-  UserPlus
+  UserPlus,
+  UserCheck,
+  Clock,
+  UserMinus
 } from "lucide-react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -27,6 +32,8 @@ import { ko } from "date-fns/locale";
 export default function ProfilePage() {
   const { id } = useParams<{ id?: string }>();
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [, navigate] = useLocation();
   
   const isOwnProfile = !id || id === user?.id;
   const profileId = id || user?.id;
@@ -44,6 +51,32 @@ export default function ProfilePage() {
   const { data: posts } = useQuery<CommunityPost[]>({
     queryKey: ["/api/profiles", profileId, "posts"],
     enabled: !!profileId,
+  });
+
+  const { data: friendshipData } = useQuery<{ friendship: Friend | null }>({
+    queryKey: ["/api/friends/status", profileId],
+    enabled: !isOwnProfile && !!profileId,
+  });
+
+  const sendFriendRequestMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/friends", { friendId: profileId }),
+    onSuccess: () => {
+      toast({ title: "친구 신청을 보냈습니다" });
+      queryClient.invalidateQueries({ queryKey: ["/api/friends/status", profileId] });
+    },
+    onError: () => {
+      toast({ title: "친구 신청 실패", variant: "destructive" });
+    },
+  });
+
+  const startChatMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/chat/direct", { userId: profileId }),
+    onSuccess: (data: any) => {
+      navigate(`/chat?room=${data.id}`);
+    },
+    onError: () => {
+      toast({ title: "채팅 시작 실패", variant: "destructive" });
+    },
   });
 
   if (profileLoading) {
@@ -74,6 +107,51 @@ export default function ProfilePage() {
     return new Date().getFullYear() - birthYear;
   };
 
+  const friendship = friendshipData?.friendship;
+  const isFriend = friendship?.status === "accepted";
+  const isPending = friendship?.status === "pending";
+  const isSentByMe = friendship?.userId === user?.id;
+
+  const renderFriendButton = () => {
+    if (isFriend) {
+      return (
+        <Button variant="secondary" disabled data-testid="button-friend-status">
+          <UserCheck className="w-4 h-4 mr-2" />
+          친구
+        </Button>
+      );
+    }
+    
+    if (isPending) {
+      if (isSentByMe) {
+        return (
+          <Button variant="outline" disabled data-testid="button-friend-pending">
+            <Clock className="w-4 h-4 mr-2" />
+            수락 대기중
+          </Button>
+        );
+      } else {
+        return (
+          <Button variant="outline" disabled data-testid="button-friend-pending">
+            <Clock className="w-4 h-4 mr-2" />
+            요청 받음
+          </Button>
+        );
+      }
+    }
+    
+    return (
+      <Button 
+        onClick={() => sendFriendRequestMutation.mutate()}
+        disabled={sendFriendRequestMutation.isPending}
+        data-testid="button-add-friend"
+      >
+        <UserPlus className="w-4 h-4 mr-2" />
+        친구 신청
+      </Button>
+    );
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 pb-24 md:pb-8">
       <Card className="mb-6">
@@ -92,8 +170,8 @@ export default function ProfilePage() {
                   {profile?.nickname || `${user?.firstName} ${user?.lastName}` || "사용자"}
                 </h1>
                 <VerificationBadges 
-                  isPhoneVerified={profile?.isPhoneVerified}
-                  isPhotoVerified={profile?.isPhotoVerified}
+                  isPhoneVerified={profile?.isPhoneVerified || false}
+                  isPhotoVerified={profile?.isPhotoVerified || false}
                   activityCount={profile?.activityCount || 0}
                   averageRating={profile?.averageRating || 0}
                 />
@@ -130,19 +208,29 @@ export default function ProfilePage() {
             
             <div className="w-full md:w-auto">
               {isOwnProfile ? (
-                <Button asChild className="w-full md:w-auto" data-testid="button-edit-profile">
-                  <Link href="/profile/edit">
-                    <Edit className="w-4 h-4 mr-2" />
-                    프로필 편집
-                  </Link>
-                </Button>
+                <div className="flex flex-col md:flex-row gap-2">
+                  <Button asChild className="w-full md:w-auto" data-testid="button-edit-profile">
+                    <Link href="/profile/edit">
+                      <Edit className="w-4 h-4 mr-2" />
+                      프로필 편집
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full md:w-auto" data-testid="button-manage-friends">
+                    <Link href="/friends">
+                      <Users className="w-4 h-4 mr-2" />
+                      친구 관리
+                    </Link>
+                  </Button>
+                </div>
               ) : (
                 <div className="flex gap-2">
-                  <Button data-testid="button-add-friend">
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    친구 신청
-                  </Button>
-                  <Button variant="outline" data-testid="button-message">
+                  {renderFriendButton()}
+                  <Button 
+                    variant="outline" 
+                    onClick={() => startChatMutation.mutate()}
+                    disabled={startChatMutation.isPending}
+                    data-testid="button-message"
+                  >
                     <MessageCircle className="w-4 h-4" />
                   </Button>
                 </div>
@@ -252,19 +340,19 @@ export default function ProfilePage() {
                           }
                         </p>
                       </div>
-                      <Badge variant="outline">{activity.category}</Badge>
+                      <Badge variant={activity.status === "모집중" ? "default" : "secondary"}>
+                        {activity.status}
+                      </Badge>
                     </CardContent>
                   </Card>
                 </Link>
               ))}
             </div>
           ) : (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Calendar className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">아직 참여한 활동이 없습니다</p>
-              </CardContent>
-            </Card>
+            <div className="text-center py-12 text-muted-foreground">
+              <Calendar className="w-10 h-10 mx-auto mb-3 opacity-50" />
+              <p>아직 활동 내역이 없습니다</p>
+            </div>
           )}
         </TabsContent>
         
@@ -272,33 +360,30 @@ export default function ProfilePage() {
           {posts && posts.length > 0 ? (
             <div className="grid grid-cols-3 gap-1">
               {posts.map((post) => (
-                <Link key={post.id} href={`/community/${post.id}`}>
-                  <div 
-                    className="aspect-square bg-muted rounded-lg overflow-hidden hover-elevate cursor-pointer"
-                    data-testid={`post-${post.id}`}
-                  >
-                    {post.images?.[0] ? (
-                      <img 
-                        src={post.images[0]} 
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Grid3X3 className="w-8 h-8 text-muted-foreground" />
-                      </div>
-                    )}
-                  </div>
-                </Link>
+                <div 
+                  key={post.id} 
+                  className="aspect-square bg-muted overflow-hidden"
+                  data-testid={`post-${post.id}`}
+                >
+                  {post.images?.[0] ? (
+                    <img 
+                      src={post.images[0]} 
+                      alt="게시물"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground p-2">
+                      {post.content?.substring(0, 50)}...
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           ) : (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <Grid3X3 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">아직 게시물이 없습니다</p>
-              </CardContent>
-            </Card>
+            <div className="text-center py-12 text-muted-foreground">
+              <Grid3X3 className="w-10 h-10 mx-auto mb-3 opacity-50" />
+              <p>아직 게시물이 없습니다</p>
+            </div>
           )}
         </TabsContent>
       </Tabs>
