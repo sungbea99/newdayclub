@@ -133,23 +133,23 @@ export default function Home() {
     <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-24 md:pb-8">
       <section className="mb-10">
         <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-6 md:p-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">
+          <div className="flex flex-row items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl md:text-3xl font-bold mb-1 md:mb-2">
                 안녕하세요, {profile?.nickname || user?.firstName || "회원"}님
               </h1>
-              <p className="text-sm text-primary font-medium mb-1">
+              <p className="text-xs md:text-sm text-primary font-medium mb-1">
                 대표 5060 여가생활 커뮤니티
               </p>
-              <p className="text-muted-foreground">
+              <p className="text-sm text-muted-foreground hidden md:block">
                 오늘도 즐거운 동행을 찾아보세요!
               </p>
             </div>
             
             <div className="flex-shrink-0">
               {!profileLoading && !profile ? (
-                <div className="p-4 bg-amber-100 dark:bg-amber-900/30 rounded-lg md:text-right">
-                  <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
+                <div className="p-3 md:p-4 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-right max-w-[180px] md:max-w-none">
+                  <p className="text-xs md:text-sm text-amber-800 dark:text-amber-200 mb-2">
                     프로필을 완성하면 더 정확한 추천을 받을 수 있어요!
                   </p>
                   <Button asChild size="sm" data-testid="button-complete-profile">
