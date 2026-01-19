@@ -1,10 +1,9 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, PlusCircle, MessageCircle, Users, User } from "lucide-react";
+import { Home, Users, MessageCircle, Compass, User } from "lucide-react";
 
 const navItems = [
   { path: "/", icon: Home, label: "홈" },
-  { path: "/activities", icon: Search, label: "탐색" },
-  { path: "/activities/new", icon: PlusCircle, label: "모집" },
+  { path: "/activities", icon: Compass, label: "동행 찾기" },
   { path: "/chat", icon: MessageCircle, label: "채팅" },
   { path: "/community", icon: Users, label: "커뮤니티" },
   { path: "/profile", icon: User, label: "MY" },

@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
-import { Users, Bell, Home, Search, PlusCircle, MessageCircle, User, LogOut, Settings } from "lucide-react";
+import { Users, Bell, Home, Compass, MessageCircle, User, LogOut, Settings } from "lucide-react";
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -18,8 +18,7 @@ export function Header() {
 
   const navItems = [
     { path: "/", icon: Home, label: "홈" },
-    { path: "/activities", icon: Search, label: "활동 탐색" },
-    { path: "/activities/new", icon: PlusCircle, label: "모집하기" },
+    { path: "/activities", icon: Compass, label: "동행 찾기" },
     { path: "/chat", icon: MessageCircle, label: "채팅" },
     { path: "/community", icon: Users, label: "커뮤니티" },
   ];

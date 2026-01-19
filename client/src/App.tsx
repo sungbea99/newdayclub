@@ -13,13 +13,13 @@ import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Activities from "@/pages/activities";
 import ActivityDetail from "@/pages/activity-detail";
-import ActivityNew from "@/pages/activity-new";
 import ActivityEdit from "@/pages/activity-edit";
 import ActivityParticipants from "@/pages/activity-participants";
 import Profile from "@/pages/profile";
 import ProfileEdit from "@/pages/profile-edit";
 import Chat from "@/pages/chat";
 import Community from "@/pages/community";
+import { Redirect } from "wouter";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -51,7 +51,9 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/activities" component={Activities} />
-        <Route path="/activities/new" component={ActivityNew} />
+        <Route path="/activities/new">
+          <Redirect to="/activities?tab=create" />
+        </Route>
         <Route path="/activities/:id/edit" component={ActivityEdit} />
         <Route path="/activities/:id/participants" component={ActivityParticipants} />
         <Route path="/activities/:id" component={ActivityDetail} />
