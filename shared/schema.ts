@@ -375,23 +375,3 @@ export const insertNotificationSchema = createInsertSchema(notifications).omit({
 
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Notification = typeof notifications.$inferSelect;
-
-// Phone Verification Codes
-export const phoneVerificationCodes = pgTable("phone_verification_codes", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull(),
-  phoneNumber: varchar("phone_number", { length: 20 }).notNull(),
-  code: varchar("code", { length: 6 }).notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  isUsed: boolean("is_used").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const insertPhoneVerificationCodeSchema = createInsertSchema(phoneVerificationCodes).omit({
-  id: true,
-  isUsed: true,
-  createdAt: true,
-});
-
-export type InsertPhoneVerificationCode = z.infer<typeof insertPhoneVerificationCodeSchema>;
-export type PhoneVerificationCode = typeof phoneVerificationCodes.$inferSelect;

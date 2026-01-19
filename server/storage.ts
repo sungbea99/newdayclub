@@ -10,10 +10,9 @@ import {
   bookmarks, type Bookmark, type InsertBookmark,
   friends, type Friend, type InsertFriend,
   notifications, type Notification, type InsertNotification,
-  phoneVerificationCodes, type PhoneVerificationCode, type InsertPhoneVerificationCode,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, or, sql, gt } from "drizzle-orm";
+import { eq, desc, and, or, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Profiles
@@ -81,11 +80,6 @@ export interface IStorage {
   createNotification(notification: InsertNotification): Promise<Notification>;
   markNotificationAsRead(id: string): Promise<Notification | undefined>;
   markAllNotificationsAsRead(userId: string): Promise<void>;
-  
-  // Phone Verification
-  createPhoneVerificationCode(data: InsertPhoneVerificationCode): Promise<PhoneVerificationCode>;
-  getValidVerificationCode(userId: string, phoneNumber: string, code: string): Promise<PhoneVerificationCode | undefined>;
-  markVerificationCodeAsUsed(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -504,31 +498,6 @@ export class DatabaseStorage implements IStorage {
     await db.update(notifications)
       .set({ isRead: true })
       .where(eq(notifications.userId, userId));
-  }
-
-  // Phone Verification
-  async createPhoneVerificationCode(data: InsertPhoneVerificationCode): Promise<PhoneVerificationCode> {
-    const [code] = await db.insert(phoneVerificationCodes).values(data).returning();
-    return code;
-  }
-
-  async getValidVerificationCode(userId: string, phoneNumber: string, code: string): Promise<PhoneVerificationCode | undefined> {
-    const [result] = await db.select().from(phoneVerificationCodes)
-      .where(and(
-        eq(phoneVerificationCodes.userId, userId),
-        eq(phoneVerificationCodes.phoneNumber, phoneNumber),
-        eq(phoneVerificationCodes.code, code),
-        eq(phoneVerificationCodes.isUsed, false),
-        gt(phoneVerificationCodes.expiresAt, new Date())
-      ))
-      .limit(1);
-    return result;
-  }
-
-  async markVerificationCodeAsUsed(id: string): Promise<void> {
-    await db.update(phoneVerificationCodes)
-      .set({ isUsed: true })
-      .where(eq(phoneVerificationCodes.id, id));
   }
 }
 
