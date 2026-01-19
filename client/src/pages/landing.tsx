@@ -141,8 +141,18 @@ export default function Landing() {
             
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <Button size="sm" asChild data-testid="button-login">
-                <a href="/api/login">시작하기</a>
+              <Button 
+                size="sm" 
+                className="bg-[#FEE500] hover:bg-[#FDD800] text-[#191919] border-none"
+                asChild 
+                data-testid="button-login"
+              >
+                <a href="/api/auth/kakao" className="flex items-center gap-1.5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3C6.48 3 2 6.58 2 11c0 2.84 1.89 5.33 4.71 6.73-.18.66-.71 2.57-.81 2.97-.13.48.17.47.36.34.15-.1 2.37-1.61 3.34-2.27.45.07.92.1 1.4.1 5.52 0 10-3.58 10-8 0-4.42-4.48-8-10-8z"/>
+                  </svg>
+                  시작하기
+                </a>
               </Button>
             </div>
           </div>
@@ -208,21 +218,30 @@ export default function Landing() {
               
               <motion.div 
                 variants={fadeInUp}
-                className="flex flex-col sm:flex-row gap-4 pt-4"
+                className="flex flex-col gap-4 pt-4"
               >
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button size="lg" className="text-lg px-10 py-7 h-auto" asChild data-testid="button-cta-main">
-                    <a href="/api/login">
-                      무료로 시작하기
-                      <ArrowRight className="ml-2 w-5 h-5" />
+                  <Button 
+                    size="lg" 
+                    className="text-lg px-10 py-7 h-auto w-full sm:w-auto bg-[#FEE500] hover:bg-[#FDD800] text-[#191919] border-none" 
+                    asChild 
+                    data-testid="button-kakao-login"
+                  >
+                    <a href="/api/auth/kakao" className="flex items-center justify-center gap-2">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3C6.48 3 2 6.58 2 11c0 2.84 1.89 5.33 4.71 6.73-.18.66-.71 2.57-.81 2.97-.13.48.17.47.36.34.15-.1 2.37-1.61 3.34-2.27.45.07.92.1 1.4.1 5.52 0 10-3.58 10-8 0-4.42-4.48-8-10-8z"/>
+                      </svg>
+                      카카오로 시작하기
                     </a>
                   </Button>
                 </motion.div>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button size="lg" variant="outline" className="text-lg px-8 py-7 h-auto" asChild>
-                    <a href="#how-it-works">이용 방법 보기</a>
-                  </Button>
-                </motion.div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button size="lg" variant="outline" className="text-base px-6 py-5 h-auto" asChild>
+                      <a href="#how-it-works">이용 방법 보기</a>
+                    </Button>
+                  </motion.div>
+                </div>
               </motion.div>
               
               <motion.div 
@@ -820,14 +839,15 @@ export default function Landing() {
             >
               <Button 
                 size="lg" 
-                variant="secondary" 
-                className="text-lg px-8"
+                className="text-lg px-8 bg-[#FEE500] hover:bg-[#FDD800] text-[#191919] border-none"
                 asChild
                 data-testid="button-cta-footer"
               >
-                <a href="/api/login">
-                  무료로 가입하기
-                  <ArrowRight className="ml-2 w-5 h-5" />
+                <a href="/api/auth/kakao" className="flex items-center gap-2">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3C6.48 3 2 6.58 2 11c0 2.84 1.89 5.33 4.71 6.73-.18.66-.71 2.57-.81 2.97-.13.48.17.47.36.34.15-.1 2.37-1.61 3.34-2.27.45.07.92.1 1.4.1 5.52 0 10-3.58 10-8 0-4.42-4.48-8-10-8z"/>
+                  </svg>
+                  카카오로 시작하기
                 </a>
               </Button>
             </motion.div>

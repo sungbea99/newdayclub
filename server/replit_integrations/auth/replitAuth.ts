@@ -142,6 +142,10 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     return next();
   }
 
+  if (user.provider === "kakao") {
+    return res.status(401).json({ message: "Session expired. Please login again." });
+  }
+
   const refreshToken = user.refresh_token;
   if (!refreshToken) {
     res.status(401).json({ message: "Unauthorized" });
