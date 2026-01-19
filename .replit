@@ -40,8 +40,3 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_log_in_with_replit:2.0.0", "javascript_database:1.0.0"]
-
-[userenv]
-
-[userenv.shared]
-KAKAO_REST_API_KEY = "8c6f022282f4ec4c6d6e9814a203013d"
