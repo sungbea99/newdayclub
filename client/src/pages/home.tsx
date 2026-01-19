@@ -133,8 +133,8 @@ export default function Home() {
     <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 pb-24 md:pb-8">
       <section className="mb-10">
         <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl p-6 md:p-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex-1">
               <h1 className="text-2xl md:text-3xl font-bold mb-2">
                 안녕하세요, {profile?.nickname || user?.firstName || "회원"}님
               </h1>
@@ -144,9 +144,11 @@ export default function Home() {
               <p className="text-muted-foreground">
                 오늘도 즐거운 동행을 찾아보세요!
               </p>
-              
-              {!profileLoading && !profile && (
-                <div className="mt-4 p-4 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+            </div>
+            
+            <div className="flex-shrink-0">
+              {!profileLoading && !profile ? (
+                <div className="p-4 bg-amber-100 dark:bg-amber-900/30 rounded-lg md:text-right">
                   <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
                     프로필을 완성하면 더 정확한 추천을 받을 수 있어요!
                   </p>
@@ -154,25 +156,23 @@ export default function Home() {
                     <Link href="/profile/edit">프로필 작성하기</Link>
                   </Button>
                 </div>
+              ) : profile && (
+                <div className="text-right">
+                  <div className="mb-2">
+                    <span className="text-sm text-muted-foreground">프로필 완성도</span>
+                  </div>
+                  <div className="flex items-center justify-end gap-2">
+                    <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary rounded-full transition-all"
+                        style={{ width: `${profile.profileCompleteness || 0}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium">{profile.profileCompleteness || 0}%</span>
+                  </div>
+                </div>
               )}
             </div>
-            
-            {profile && (
-              <div className="hidden md:block">
-                <div className="text-right mb-2">
-                  <span className="text-sm text-muted-foreground">프로필 완성도</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-primary rounded-full transition-all"
-                      style={{ width: `${profile.profileCompleteness || 0}%` }}
-                    />
-                  </div>
-                  <span className="text-sm font-medium">{profile.profileCompleteness || 0}%</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </section>
