@@ -121,8 +121,26 @@ export default function ProfileEdit() {
     },
   });
 
+  const sendCodeMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/profiles/send-verification-code", { phoneNumber }),
+    onSuccess: () => {
+      setIsCodeSent(true);
+      toast({
+        title: "인증번호 발송 완료",
+        description: "입력하신 번호로 인증번호가 발송되었습니다.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "발송 실패",
+        description: error?.message || "인증번호 발송에 실패했습니다. 다시 시도해주세요.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const phoneVerifyMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/api/profiles/verify-phone", { phoneNumber }),
+    mutationFn: () => apiRequest("POST", "/api/profiles/verify-phone", { phoneNumber, code: verificationCode }),
     onSuccess: () => {
       toast({
         title: "전화번호 인증 완료",
@@ -136,7 +154,7 @@ export default function ProfileEdit() {
     onError: () => {
       toast({
         title: "인증 실패",
-        description: "인증 코드가 올바르지 않습니다.",
+        description: "인증 코드가 올바르지 않거나 만료되었습니다.",
         variant: "destructive",
       });
     },
@@ -165,28 +183,24 @@ export default function ProfileEdit() {
     if (phoneNumber.length < 10) {
       toast({
         title: "전화번호 오류",
-        description: "올바른 전화번호를 입력해주세요.",
+        description: "올바른 전화번호를 입력해주세요. (예: +821012345678)",
         variant: "destructive",
       });
       return;
     }
-    setIsCodeSent(true);
-    toast({
-      title: "인증번호 발송",
-      description: "입력하신 번호로 인증번호가 발송되었습니다. (테스트: 1234)",
-    });
+    sendCodeMutation.mutate();
   };
 
   const handleVerifyPhone = () => {
-    if (verificationCode === "1234") {
-      phoneVerifyMutation.mutate();
-    } else {
+    if (verificationCode.length !== 6) {
       toast({
-        title: "인증 실패",
-        description: "인증 코드가 올바르지 않습니다. (테스트: 1234)",
+        title: "인증 코드 오류",
+        description: "6자리 인증번호를 입력해주세요.",
         variant: "destructive",
       });
+      return;
     }
+    phoneVerifyMutation.mutate();
   };
 
   const handlePhotoSubmit = () => {
@@ -268,7 +282,7 @@ export default function ProfileEdit() {
                 </p>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="010-0000-0000"
+                    placeholder="+821012345678"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     className="flex-1"
@@ -278,10 +292,10 @@ export default function ProfileEdit() {
                     type="button" 
                     variant="outline"
                     onClick={handleSendCode}
-                    disabled={isCodeSent}
+                    disabled={isCodeSent || sendCodeMutation.isPending}
                     data-testid="button-send-code"
                   >
-                    {isCodeSent ? "발송됨" : "인증번호 받기"}
+                    {sendCodeMutation.isPending ? "발송 중..." : isCodeSent ? "발송됨" : "인증번호 받기"}
                   </Button>
                 </div>
                 {isCodeSent && (

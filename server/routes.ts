@@ -77,10 +77,76 @@ export async function registerRoutes(
     }
   });
 
+  // SMS 인증번호 발송
+  app.post("/api/profiles/send-verification-code", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { phoneNumber } = req.body;
+      
+      if (!phoneNumber) {
+        return res.status(400).json({ message: "Phone number is required" });
+      }
+      
+      // Generate 6-digit code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+      
+      // Save verification code
+      await storage.createPhoneVerificationCode({
+        userId,
+        phoneNumber,
+        code,
+        expiresAt,
+      });
+      
+      // Send SMS via Twilio
+      const accountSid = process.env.TWILIO_ACCOUNT_SID;
+      const authToken = process.env.TWILIO_AUTH_TOKEN;
+      const twilioPhone = process.env.TWILIO_PHONE_NUMBER;
+      
+      if (!accountSid || !authToken || !twilioPhone) {
+        console.error("Twilio credentials not configured");
+        return res.status(500).json({ message: "SMS service not configured" });
+      }
+      
+      const twilio = require("twilio")(accountSid, authToken);
+      
+      await twilio.messages.create({
+        body: `[동락] 인증번호는 ${code}입니다. 5분 내에 입력해주세요.`,
+        from: twilioPhone,
+        to: phoneNumber,
+      });
+      
+      res.json({ success: true, message: "Verification code sent" });
+    } catch (error) {
+      console.error("Error sending verification code:", error);
+      res.status(500).json({ message: "Failed to send verification code" });
+    }
+  });
+
+  // SMS 인증번호 확인
   app.post("/api/profiles/verify-phone", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const { phoneNumber, code } = req.body;
+      
+      if (!phoneNumber || !code) {
+        return res.status(400).json({ message: "Phone number and code are required" });
+      }
+      
+      // Verify code
+      const verificationCode = await storage.getValidVerificationCode(userId, phoneNumber, code);
+      
+      if (!verificationCode) {
+        return res.status(400).json({ message: "Invalid or expired verification code" });
+      }
+      
+      // Mark code as used
+      await storage.markVerificationCodeAsUsed(verificationCode.id);
+      
+      // Update profile
       const profile = await storage.updateProfile(userId, { isPhoneVerified: true });
+      
       res.json(profile);
     } catch (error) {
       console.error("Error verifying phone:", error);
