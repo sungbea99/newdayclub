@@ -692,6 +692,14 @@ export async function registerRoutes(
 
   app.patch("/api/notifications/:id/read", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const notificationsList = await storage.getNotifications(userId);
+      const notification = notificationsList.find(n => n.id === req.params.id);
+      
+      if (!notification) {
+        return res.status(403).json({ message: "Notification not found or access denied" });
+      }
+      
       const updated = await storage.markNotificationAsRead(req.params.id);
       res.json(updated);
     } catch (error) {
