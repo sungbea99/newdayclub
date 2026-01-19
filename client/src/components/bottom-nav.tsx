@@ -1,12 +1,13 @@
 import { Link, useLocation } from "wouter";
-import { Home, Search, PlusCircle, MessageCircle, User } from "lucide-react";
+import { Home, Search, PlusCircle, MessageCircle, Users, User } from "lucide-react";
 
 const navItems = [
   { path: "/", icon: Home, label: "홈" },
   { path: "/activities", icon: Search, label: "탐색" },
   { path: "/activities/new", icon: PlusCircle, label: "모집" },
   { path: "/chat", icon: MessageCircle, label: "채팅" },
-  { path: "/profile", icon: User, label: "프로필" },
+  { path: "/community", icon: Users, label: "커뮤니티" },
+  { path: "/profile", icon: User, label: "MY" },
 ];
 
 export function BottomNav() {
@@ -22,13 +23,13 @@ export function BottomNav() {
           return (
             <Link key={item.path} href={item.path}>
               <button
-                className={`flex flex-col items-center gap-1 py-2 px-4 ${
+                className={`flex flex-col items-center gap-0.5 py-2 px-1 min-w-0 ${
                   isActive ? "text-primary" : "text-muted-foreground"
                 }`}
                 data-testid={`nav-${item.label}`}
               >
-                <item.icon className="w-6 h-6" />
-                <span className="text-xs font-medium">{item.label}</span>
+                <item.icon className="w-5 h-5" />
+                <span className="text-[10px] font-medium truncate">{item.label}</span>
               </button>
             </Link>
           );
