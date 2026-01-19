@@ -335,3 +335,43 @@ export const insertFriendSchema = createInsertSchema(friends).omit({
 
 export type InsertFriend = z.infer<typeof insertFriendSchema>;
 export type Friend = typeof friends.$inferSelect;
+
+// Notifications System
+export const NOTIFICATION_TYPES = [
+  "friend_request",
+  "friend_accepted",
+  "activity_join_request",
+  "activity_accepted",
+  "activity_rejected",
+  "new_message",
+  "new_comment",
+  "post_like",
+] as const;
+
+export const notifications = pgTable("notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  type: varchar("type", { length: 50 }).notNull(),
+  title: varchar("title", { length: 200 }).notNull(),
+  message: text("message"),
+  relatedId: varchar("related_id"),
+  relatedType: varchar("related_type", { length: 50 }),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(profiles, {
+    fields: [notifications.userId],
+    references: [profiles.userId],
+  }),
+}));
+
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  isRead: true,
+  createdAt: true,
+});
+
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type Notification = typeof notifications.$inferSelect;

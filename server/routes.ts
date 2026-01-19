@@ -598,6 +598,18 @@ export async function registerRoutes(
         userId,
         friendId: req.body.friendId,
       });
+      
+      // Create notification for friend request
+      const senderProfile = await storage.getProfile(userId);
+      await storage.createNotification({
+        userId: req.body.friendId,
+        type: "friend_request",
+        title: "새로운 친구 요청",
+        message: `${senderProfile?.nickname || "누군가"}님이 친구 요청을 보냈습니다.`,
+        relatedId: friend.id,
+        relatedType: "friend",
+      });
+      
       res.json(friend);
     } catch (error) {
       console.error("Error creating friend request:", error);
@@ -607,10 +619,25 @@ export async function registerRoutes(
 
   app.patch("/api/friends/:id", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const updated = await storage.updateFriendStatus(req.params.id, req.body.status);
       if (!updated) {
         return res.status(404).json({ message: "Friend request not found" });
       }
+      
+      // Create notification when friend request is accepted
+      if (req.body.status === "accepted") {
+        const accepterProfile = await storage.getProfile(userId);
+        await storage.createNotification({
+          userId: updated.userId,
+          type: "friend_accepted",
+          title: "친구 요청 수락됨",
+          message: `${accepterProfile?.nickname || "누군가"}님이 친구 요청을 수락했습니다.`,
+          relatedId: updated.id,
+          relatedType: "friend",
+        });
+      }
+      
       res.json(updated);
     } catch (error) {
       console.error("Error updating friend status:", error);
@@ -637,6 +664,50 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error creating direct chat:", error);
       res.status(500).json({ message: "Failed to create direct chat" });
+    }
+  });
+
+  // Notifications routes
+  app.get("/api/notifications", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const notificationsList = await storage.getNotifications(userId);
+      res.json(notificationsList);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.get("/api/notifications/unread-count", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const count = await storage.getUnreadNotificationCount(userId);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching unread count:", error);
+      res.status(500).json({ message: "Failed to fetch unread count" });
+    }
+  });
+
+  app.patch("/api/notifications/:id/read", isAuthenticated, async (req: any, res) => {
+    try {
+      const updated = await storage.markNotificationAsRead(req.params.id);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  app.post("/api/notifications/read-all", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.markAllNotificationsAsRead(userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      res.status(500).json({ message: "Failed to mark all notifications as read" });
     }
   });
 
