@@ -430,10 +430,10 @@ export default function Community() {
 
   return (
     <div className="max-w-xl mx-auto px-4 md:px-0 py-4 pb-24 md:pb-8">
-      <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-lg -mx-4 px-4 py-3 border-b border-border">
+      <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-lg -mx-4 px-4 py-3">
         <h1 className="text-xl font-bold mb-3">커뮤니티</h1>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-3">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="pb-3 border-b border-border">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="following" data-testid="tab-friends">친구</TabsTrigger>
             <TabsTrigger value="recommended" data-testid="tab-recommended">추천</TabsTrigger>
@@ -441,7 +441,7 @@ export default function Community() {
           </TabsList>
         </Tabs>
 
-        <div className="relative mb-3">
+        <div className="relative mt-3 mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="게시물 검색..."
