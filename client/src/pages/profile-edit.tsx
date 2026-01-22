@@ -24,7 +24,8 @@ import {
   PREFERRED_TIME, 
   GROUP_SIZE, 
   GENDER_PREFERENCE,
-  ACTIVITY_STYLES 
+  ACTIVITY_STYLES,
+  REGIONS
 } from "@shared/schema";
 import type { Profile } from "@shared/schema";
 import { 
@@ -445,13 +446,20 @@ export default function ProfileEdit() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>거주지역</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="예: 서울 강남구" 
-                        {...field} 
-                        data-testid="input-region"
-                      />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-region">
+                          <SelectValue placeholder="지역을 선택하세요" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {REGIONS.map((region) => (
+                          <SelectItem key={region} value={region}>
+                            {region}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

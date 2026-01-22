@@ -19,6 +19,26 @@ export const INTEREST_CATEGORIES = [
   "기타취미"
 ] as const;
 
+export const REGIONS = [
+  "서울",
+  "경기",
+  "인천",
+  "부산",
+  "대구",
+  "대전",
+  "광주",
+  "울산",
+  "세종",
+  "강원",
+  "충북",
+  "충남",
+  "전북",
+  "전남",
+  "경북",
+  "경남",
+  "제주"
+] as const;
+
 export const ACTIVITY_FREQUENCY = ["주 3회 이상", "주 1~2회", "월 3~4회", "월 2회 이하"] as const;
 export const PREFERRED_TIME = ["평일 오전", "평일 오후", "평일 저녁", "주말 오전", "주말 오후", "주말 저녁"] as const;
 export const GROUP_SIZE = ["2-3명", "4-5명", "6명 이상"] as const;

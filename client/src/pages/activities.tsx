@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { Activity, Profile } from "@shared/schema";
-import { INTEREST_CATEGORIES } from "@shared/schema";
+import { INTEREST_CATEGORIES, REGIONS } from "@shared/schema";
 import { 
   CalendarDays, 
   MapPin, 
@@ -132,10 +132,14 @@ function ActivityCardSkeleton() {
 
 function FilterSheet({ 
   selectedCategory, 
-  onCategoryChange 
+  onCategoryChange,
+  selectedRegion,
+  onRegionChange
 }: { 
   selectedCategory: string | null;
   onCategoryChange: (category: string | null) => void;
+  selectedRegion: string | null;
+  onRegionChange: (region: string | null) => void;
 }) {
   return (
     <Sheet>
@@ -144,11 +148,35 @@ function FilterSheet({
           <SlidersHorizontal className="w-4 h-4" />
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="overflow-y-auto">
         <SheetHeader>
           <SheetTitle>필터</SheetTitle>
         </SheetHeader>
         <div className="py-6 space-y-6">
+          <div>
+            <h4 className="font-medium mb-4">지역</h4>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={selectedRegion === null ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => onRegionChange(null)}
+                data-testid="filter-region-all"
+              >
+                전체
+              </Button>
+              {REGIONS.map((region) => (
+                <Button
+                  key={region}
+                  variant={selectedRegion === region ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => onRegionChange(region)}
+                  data-testid={`filter-region-${region}`}
+                >
+                  {region}
+                </Button>
+              ))}
+            </div>
+          </div>
           <div>
             <h4 className="font-medium mb-4">카테고리</h4>
             <div className="space-y-2">
@@ -594,6 +622,7 @@ function CreateActivityForm({ onSuccess }: { onSuccess: () => void }) {
 export default function Activities() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const searchString = useSearch();
   const urlParams = new URLSearchParams(searchString);
   const tabParam = urlParams.get("tab");
@@ -616,7 +645,10 @@ export default function Activities() {
     
     const matchesCategory = !selectedCategory || activity.category === selectedCategory;
     
-    return matchesSearch && matchesCategory;
+    const matchesRegion = !selectedRegion || 
+      activity.location?.includes(selectedRegion);
+    
+    return matchesSearch && matchesCategory && matchesRegion;
   }) || [];
 
   const handleCreateSuccess = () => {
@@ -657,8 +689,26 @@ export default function Activities() {
             <FilterSheet 
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
+              selectedRegion={selectedRegion}
+              onRegionChange={setSelectedRegion}
             />
           </div>
+
+          {selectedRegion && (
+            <div className="mb-4 flex items-center gap-2">
+              <Badge variant="secondary" className="gap-1">
+                <MapPin className="w-3 h-3" />
+                {selectedRegion}
+                <button 
+                  onClick={() => setSelectedRegion(null)}
+                  className="ml-1 hover:text-destructive"
+                  data-testid="button-clear-region"
+                >
+                  ×
+                </button>
+              </Badge>
+            </div>
+          )}
 
           <div className="mb-6 overflow-x-auto pb-2 -mx-4 px-4">
             <div className="flex gap-2">
