@@ -194,7 +194,7 @@ export default function Landing() {
                 variants={fadeInUp}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               >
-                <span className="text-foreground/80">나누면 커지는 행복</span><br />
+                <span className="text-foreground/80">함께하는 즐거움</span><br />
                 <span className="text-primary">동락</span>
               </motion.h1>
               
@@ -276,7 +276,7 @@ export default function Landing() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.8 }}
                   >
-                    <h3 className="text-2xl font-bold mb-1">함께하는 즐거움</h3>
+                    <h3 className="text-2xl font-bold mb-1">나누면 커지는 행복</h3>
                     <p className="text-white/80">새로운 친구들과 함께 여가생활을 즐겨보세요</p>
                   </motion.div>
                 </div>
