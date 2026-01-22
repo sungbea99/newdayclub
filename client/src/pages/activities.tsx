@@ -1032,48 +1032,6 @@ export default function Activities() {
             </div>
           )}
 
-          <div className="mb-6 flex items-center justify-between">
-            <div className="overflow-x-auto pb-2 -mx-4 px-4 flex-1">
-              <div className="flex gap-2">
-                <Button
-                  variant={filters.category === null ? "secondary" : "outline"}
-                  size="sm"
-                  onClick={() => handleFilterChange("category", null)}
-                  className="whitespace-nowrap"
-                  data-testid="category-pill-all"
-                >
-                  전체
-                </Button>
-                {INTEREST_CATEGORIES.map((category) => (
-                  <Button
-                    key={category}
-                    variant={filters.category === category ? "secondary" : "outline"}
-                    size="sm"
-                    onClick={() => handleFilterChange("category", category)}
-                    className="whitespace-nowrap"
-                    data-testid={`category-pill-${category}`}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <div className="ml-4 flex-shrink-0">
-              <Select value={filters.sortBy} onValueChange={(v) => handleFilterChange("sortBy", v)}>
-                <SelectTrigger className="w-[120px]" data-testid="select-sort">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SORT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoading ? (
               <>
