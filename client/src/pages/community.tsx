@@ -3,8 +3,6 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -12,9 +10,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CategoryIcon, CategoryBadge } from "@/components/category-icon";
 import type { CommunityPost, Profile } from "@shared/schema";
-import { INTEREST_CATEGORIES } from "@shared/schema";
 import { 
   Heart, 
   MessageCircle, 
@@ -24,16 +20,8 @@ import {
   Plus,
   Image,
   MapPin,
-  X,
-  Search
+  X
 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import {
@@ -128,14 +116,7 @@ function PostCard({ post }: { post: CommunityPost & { author?: Profile; isLikedB
                 </AvatarFallback>
               </Avatar>
               <div>
-                <div className="flex items-center gap-2">
-                  <p className="font-medium">{post.author?.nickname || "익명"}</p>
-                  {post.category && (
-                    <Badge variant="secondary" className="text-xs">
-                      {post.category}
-                    </Badge>
-                  )}
-                </div>
+                <p className="font-medium">{post.author?.nickname || "익명"}</p>
                 <p className="text-xs text-muted-foreground">
                   {post.location && `${post.location} · `}
                   {post.createdAt && formatDistanceToNow(new Date(post.createdAt), { 
@@ -317,14 +298,12 @@ function CreatePostDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
-  const [category, setCategory] = useState("");
   const { toast } = useToast();
 
   const createMutation = useMutation({
     mutationFn: () => apiRequest("POST", "/api/community", { 
       content, 
       location,
-      category: category || null,
       postType: "activity",
     }),
     onSuccess: () => {
@@ -335,7 +314,6 @@ function CreatePostDialog() {
       setIsOpen(false);
       setContent("");
       setLocation("");
-      setCategory("");
       queryClient.invalidateQueries({ queryKey: ["/api/community"] });
     },
     onError: () => {
@@ -359,24 +337,6 @@ function CreatePostDialog() {
           <DialogTitle>새 게시물</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium mb-2 block">카테고리</label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger data-testid="select-post-category">
-                <SelectValue placeholder="카테고리 선택 (선택사항)" />
-              </SelectTrigger>
-              <SelectContent>
-                {INTEREST_CATEGORIES.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    <div className="flex items-center gap-2">
-                      <CategoryIcon category={cat} size="sm" />
-                      {cat}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
           <Textarea
             placeholder="활동 내용을 공유해보세요..."
             value={content}
@@ -384,7 +344,7 @@ function CreatePostDialog() {
             className="min-h-[120px]"
             data-testid="input-post-content"
           />
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2">
             <Button variant="outline" size="sm" className="gap-2" data-testid="button-add-photo">
               <Image className="w-4 h-4" />
               사진 추가
@@ -411,72 +371,22 @@ function CreatePostDialog() {
 
 export default function Community() {
   const [activeTab, setActiveTab] = useState("recommended");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const { data: posts, isLoading } = useQuery<(CommunityPost & { author?: Profile })[]>({
     queryKey: ["/api/community", activeTab],
   });
 
-  const filteredPosts = posts?.filter((post) => {
-    const matchesSearch = !searchQuery || 
-      post.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.author?.nickname?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = !selectedCategory || post.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
-  }) || [];
-
   return (
     <div className="max-w-xl mx-auto px-4 md:px-0 py-4 pb-24 md:pb-8">
-      <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-lg -mx-4 px-4 py-3">
+      <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-lg -mx-4 px-4 py-3 border-b border-border">
         <h1 className="text-xl font-bold mb-3">커뮤니티</h1>
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="pb-3 border-b border-border">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="following" data-testid="tab-friends">친구</TabsTrigger>
             <TabsTrigger value="recommended" data-testid="tab-recommended">추천</TabsTrigger>
             <TabsTrigger value="popular" data-testid="tab-popular">인기</TabsTrigger>
           </TabsList>
         </Tabs>
-
-        <div className="relative mt-3 mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="게시물 검색..."
-            className="pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            data-testid="input-search-posts"
-          />
-        </div>
-
-        <div className="overflow-x-auto pb-2 -mx-4 px-4">
-          <div className="flex gap-2">
-            <Button
-              variant={selectedCategory === null ? "secondary" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(null)}
-              className="whitespace-nowrap"
-              data-testid="category-pill-all"
-            >
-              전체
-            </Button>
-            {INTEREST_CATEGORIES.map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "secondary" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(category)}
-                className="whitespace-nowrap"
-                data-testid={`category-pill-${category}`}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-        </div>
       </div>
 
       <div className="mt-4">
@@ -486,8 +396,8 @@ export default function Community() {
             <PostCardSkeleton />
             <PostCardSkeleton />
           </>
-        ) : filteredPosts.length > 0 ? (
-          filteredPosts.map((post) => (
+        ) : posts && posts.length > 0 ? (
+          posts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))
         ) : (
@@ -496,7 +406,7 @@ export default function Community() {
               <MessageCircle className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
               <h3 className="text-lg font-medium mb-2">게시물이 없습니다</h3>
               <p className="text-muted-foreground mb-4">
-                {searchQuery || selectedCategory ? "검색 결과가 없습니다." : "첫 번째 게시물을 작성해보세요!"}
+                첫 번째 게시물을 작성해보세요!
               </p>
             </CardContent>
           </Card>

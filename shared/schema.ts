@@ -8,14 +8,14 @@ export * from "./models/auth";
 
 // Interest categories for matching
 export const INTEREST_CATEGORIES = [
-  "맛집",
-  "걷기/트레킹",
-  "여행",
-  "문화생활",
   "공연/전시",
+  "걷기/트레킹",
   "스포츠",
-  "봉사활동",
+  "문화생활",
   "교육/자기계발",
+  "봉사활동",
+  "여행",
+  "맛집",
   "기타취미"
 ] as const;
 
@@ -250,7 +250,6 @@ export const communityPosts = pgTable("community_posts", {
   images: text("images").array(),
   activityId: varchar("activity_id"),
   postType: varchar("post_type", { length: 20 }).default("activity"),
-  category: varchar("category", { length: 50 }),
   location: varchar("location", { length: 200 }),
   tags: text("tags").array(),
   likesCount: integer("likes_count").default(0),
