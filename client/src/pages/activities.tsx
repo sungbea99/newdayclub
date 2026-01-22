@@ -27,9 +27,12 @@ import {
   Filter,
   Plus,
   SlidersHorizontal,
-  ImagePlus
+  ImagePlus,
+  ArrowUpDown,
+  X,
+  Coins
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, isToday, isThisWeek, isThisMonth, parseISO, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, isWithinInterval, isBefore, differenceInDays } from "date-fns";
 import { ko } from "date-fns/locale";
 import {
   Sheet,
@@ -130,46 +133,137 @@ function ActivityCardSkeleton() {
   );
 }
 
+const DATE_FILTERS = [
+  { value: "all", label: "전체" },
+  { value: "today", label: "오늘" },
+  { value: "this_week", label: "이번 주" },
+  { value: "this_month", label: "이번 달" },
+] as const;
+
+const PARTICIPANTS_FILTERS = [
+  { value: "all", label: "전체" },
+  { value: "2-3", label: "2-3명" },
+  { value: "4-5", label: "4-5명" },
+  { value: "6+", label: "6명 이상" },
+] as const;
+
+const COST_FILTERS = [
+  { value: "all", label: "전체" },
+  { value: "free", label: "무료" },
+  { value: "10000", label: "~1만원" },
+  { value: "30000", label: "~3만원" },
+  { value: "50000", label: "~5만원" },
+  { value: "50000+", label: "5만원 이상" },
+] as const;
+
+const SORT_OPTIONS = [
+  { value: "recommended", label: "추천순" },
+  { value: "latest", label: "최신순" },
+  { value: "deadline", label: "마감임박순" },
+  { value: "popular", label: "인기순" },
+] as const;
+
+type FilterState = {
+  category: string | null;
+  region: string | null;
+  dateFilter: string;
+  participants: string;
+  cost: string;
+  sortBy: string;
+};
+
 function FilterSheet({ 
-  selectedCategory, 
-  onCategoryChange,
-  selectedRegion,
-  onRegionChange
+  filters,
+  onFilterChange
 }: { 
-  selectedCategory: string | null;
-  onCategoryChange: (category: string | null) => void;
-  selectedRegion: string | null;
-  onRegionChange: (region: string | null) => void;
+  filters: FilterState;
+  onFilterChange: (key: keyof FilterState, value: string | null) => void;
 }) {
-  const currentCity = selectedRegion?.split(" ")[0] || null;
-  const currentDistrict = selectedRegion?.split(" ")[1] || null;
+  const currentCity = filters.region?.split(" ")[0] || null;
+  const currentDistrict = filters.region?.split(" ")[1] || null;
   const availableDistricts = currentCity ? DISTRICTS[currentCity] || [] : [];
 
   const handleCityChange = (city: string | null) => {
-    onRegionChange(city);
+    onFilterChange("region", city);
   };
 
   const handleDistrictChange = (district: string) => {
-    onRegionChange(`${currentCity} ${district}`);
+    onFilterChange("region", `${currentCity} ${district}`);
   };
+
+  const activeFilterCount = [
+    filters.category,
+    filters.region,
+    filters.dateFilter !== "all" ? filters.dateFilter : null,
+    filters.participants !== "all" ? filters.participants : null,
+    filters.cost !== "all" ? filters.cost : null,
+  ].filter(Boolean).length;
 
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" data-testid="button-filter">
+        <Button variant="outline" size="icon" className="relative" data-testid="button-filter">
           <SlidersHorizontal className="w-4 h-4" />
+          {activeFilterCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
+              {activeFilterCount}
+            </span>
+          )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="overflow-y-auto">
+      <SheetContent className="overflow-y-auto w-full sm:max-w-md">
         <SheetHeader>
-          <SheetTitle>필터</SheetTitle>
+          <SheetTitle>필터 및 정렬</SheetTitle>
         </SheetHeader>
         <div className="py-6 space-y-6">
           <div>
-            <h4 className="font-medium mb-3">시/도</h4>
+            <h4 className="font-medium mb-3 flex items-center gap-2">
+              <ArrowUpDown className="w-4 h-4" />
+              정렬
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {SORT_OPTIONS.map((option) => (
+                <Button
+                  key={option.value}
+                  variant={filters.sortBy === option.value ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => onFilterChange("sortBy", option.value)}
+                  data-testid={`sort-${option.value}`}
+                >
+                  {option.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-medium mb-3 flex items-center gap-2">
+              <CalendarDays className="w-4 h-4" />
+              날짜
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {DATE_FILTERS.map((option) => (
+                <Button
+                  key={option.value}
+                  variant={filters.dateFilter === option.value ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => onFilterChange("dateFilter", option.value)}
+                  data-testid={`filter-date-${option.value}`}
+                >
+                  {option.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-medium mb-3 flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              시/도
+            </h4>
             <div className="flex flex-wrap gap-2">
               <Button
-                variant={selectedRegion === null ? "secondary" : "outline"}
+                variant={filters.region === null ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => handleCityChange(null)}
                 data-testid="filter-region-all"
@@ -192,11 +286,11 @@ function FilterSheet({
           {currentCity && availableDistricts.length > 0 && (
             <div>
               <h4 className="font-medium mb-3">구/군</h4>
-              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+              <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
                 <Button
                   variant={!currentDistrict ? "secondary" : "outline"}
                   size="sm"
-                  onClick={() => onRegionChange(currentCity)}
+                  onClick={() => onFilterChange("region", currentCity)}
                   data-testid="filter-district-all"
                 >
                   전체
@@ -215,13 +309,54 @@ function FilterSheet({
               </div>
             </div>
           )}
+
           <div>
-            <h4 className="font-medium mb-4">카테고리</h4>
-            <div className="space-y-2">
+            <h4 className="font-medium mb-3 flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              인원수
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {PARTICIPANTS_FILTERS.map((option) => (
+                <Button
+                  key={option.value}
+                  variant={filters.participants === option.value ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => onFilterChange("participants", option.value)}
+                  data-testid={`filter-participants-${option.value}`}
+                >
+                  {option.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-medium mb-3 flex items-center gap-2">
+              <Coins className="w-4 h-4" />
+              예상 비용
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {COST_FILTERS.map((option) => (
+                <Button
+                  key={option.value}
+                  variant={filters.cost === option.value ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => onFilterChange("cost", option.value)}
+                  data-testid={`filter-cost-${option.value}`}
+                >
+                  {option.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-medium mb-3">카테고리</h4>
+            <div className="flex flex-wrap gap-2">
               <Button
-                variant={selectedCategory === null ? "secondary" : "ghost"}
-                className="w-full justify-start"
-                onClick={() => onCategoryChange(null)}
+                variant={filters.category === null ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => onFilterChange("category", null)}
                 data-testid="filter-category-all"
               >
                 전체
@@ -229,12 +364,11 @@ function FilterSheet({
               {INTEREST_CATEGORIES.map((category) => (
                 <Button
                   key={category}
-                  variant={selectedCategory === category ? "secondary" : "ghost"}
-                  className="w-full justify-start gap-2"
-                  onClick={() => onCategoryChange(category)}
+                  variant={filters.category === category ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => onFilterChange("category", category)}
                   data-testid={`filter-category-${category}`}
                 >
-                  <CategoryIcon category={category} size="sm" />
                   {category}
                 </Button>
               ))}
@@ -659,8 +793,14 @@ function CreateActivityForm({ onSuccess }: { onSuccess: () => void }) {
 
 export default function Activities() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FilterState>({
+    category: null,
+    region: null,
+    dateFilter: "all",
+    participants: "all",
+    cost: "all",
+    sortBy: "recommended",
+  });
   const searchString = useSearch();
   const urlParams = new URLSearchParams(searchString);
   const tabParam = urlParams.get("tab");
@@ -676,18 +816,111 @@ export default function Activities() {
     queryKey: ["/api/activities"],
   });
 
-  const filteredActivities = activities?.filter((activity) => {
-    const matchesSearch = !searchQuery || 
-      activity.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      activity.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = !selectedCategory || activity.category === selectedCategory;
-    
-    const matchesRegion = !selectedRegion || 
-      activity.location?.includes(selectedRegion);
-    
-    return matchesSearch && matchesCategory && matchesRegion;
-  }) || [];
+  const handleFilterChange = (key: keyof FilterState, value: string | null) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const parseCost = (costString: string | undefined | null): number => {
+    if (!costString) return 0;
+    const numMatch = costString.replace(/[^0-9]/g, "");
+    return numMatch ? parseInt(numMatch, 10) : 0;
+  };
+
+  const filteredAndSortedActivities = (() => {
+    let result = activities?.filter((activity) => {
+      const matchesSearch = !searchQuery || 
+        activity.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        activity.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        activity.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+      const matchesCategory = !filters.category || activity.category === filters.category;
+      
+      const matchesRegion = !filters.region || 
+        activity.location?.includes(filters.region);
+      
+      let matchesDate = true;
+      if (filters.dateFilter !== "all" && activity.activityDate) {
+        const activityDate = new Date(activity.activityDate);
+        const now = new Date();
+        switch (filters.dateFilter) {
+          case "today":
+            matchesDate = isToday(activityDate);
+            break;
+          case "this_week":
+            matchesDate = isThisWeek(activityDate, { weekStartsOn: 1 });
+            break;
+          case "this_month":
+            matchesDate = isThisMonth(activityDate);
+            break;
+        }
+      }
+
+      let matchesParticipants = true;
+      if (filters.participants !== "all") {
+        const max = activity.maxParticipants || 5;
+        switch (filters.participants) {
+          case "2-3":
+            matchesParticipants = max >= 2 && max <= 3;
+            break;
+          case "4-5":
+            matchesParticipants = max >= 4 && max <= 5;
+            break;
+          case "6+":
+            matchesParticipants = max >= 6;
+            break;
+        }
+      }
+
+      let matchesCost = true;
+      if (filters.cost !== "all") {
+        const cost = parseCost(activity.estimatedCost);
+        switch (filters.cost) {
+          case "free":
+            matchesCost = activity.estimatedCost?.includes("무료") || activity.estimatedCost === "0원" || activity.estimatedCost === "0" || (cost === 0 && !!activity.estimatedCost);
+            break;
+          case "10000":
+            matchesCost = cost > 0 && cost <= 10000;
+            break;
+          case "30000":
+            matchesCost = cost > 10000 && cost <= 30000;
+            break;
+          case "50000":
+            matchesCost = cost > 30000 && cost <= 50000;
+            break;
+          case "50000+":
+            matchesCost = cost > 50000;
+            break;
+        }
+      }
+      
+      return matchesSearch && matchesCategory && matchesRegion && matchesDate && matchesParticipants && matchesCost;
+    }) || [];
+
+    switch (filters.sortBy) {
+      case "latest":
+        result = result.sort((a, b) => 
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+        );
+        break;
+      case "deadline":
+        result = result.sort((a, b) => {
+          const dateA = a.activityDate ? new Date(a.activityDate).getTime() : Infinity;
+          const dateB = b.activityDate ? new Date(b.activityDate).getTime() : Infinity;
+          return dateA - dateB;
+        });
+        break;
+      case "popular":
+        result = result.sort((a, b) => 
+          (b.currentParticipants || 0) - (a.currentParticipants || 0)
+        );
+        break;
+      case "recommended":
+      default:
+        break;
+    }
+
+    return result;
+  })();
 
   const handleCreateSuccess = () => {
     setActiveTab("search");
@@ -725,52 +958,119 @@ export default function Activities() {
               />
             </div>
             <FilterSheet 
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              selectedRegion={selectedRegion}
-              onRegionChange={setSelectedRegion}
+              filters={filters}
+              onFilterChange={handleFilterChange}
             />
           </div>
 
-          {selectedRegion && (
-            <div className="mb-4 flex items-center gap-2">
-              <Badge variant="secondary" className="gap-1">
-                <MapPin className="w-3 h-3" />
-                {selectedRegion}
-                <button 
-                  onClick={() => setSelectedRegion(null)}
-                  className="ml-1 hover:text-destructive"
-                  data-testid="button-clear-region"
-                >
-                  ×
-                </button>
-              </Badge>
+          {(filters.region || filters.category || filters.dateFilter !== "all" || filters.participants !== "all" || filters.cost !== "all") && (
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              {filters.region && (
+                <Badge variant="secondary" className="gap-1">
+                  <MapPin className="w-3 h-3" />
+                  {filters.region}
+                  <button 
+                    onClick={() => handleFilterChange("region", null)}
+                    className="ml-1 hover:text-destructive"
+                    data-testid="button-clear-region"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+              {filters.category && (
+                <Badge variant="secondary" className="gap-1">
+                  {filters.category}
+                  <button 
+                    onClick={() => handleFilterChange("category", null)}
+                    className="ml-1 hover:text-destructive"
+                    data-testid="button-clear-category"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+              {filters.dateFilter !== "all" && (
+                <Badge variant="secondary" className="gap-1">
+                  <CalendarDays className="w-3 h-3" />
+                  {DATE_FILTERS.find(d => d.value === filters.dateFilter)?.label}
+                  <button 
+                    onClick={() => handleFilterChange("dateFilter", "all")}
+                    className="ml-1 hover:text-destructive"
+                    data-testid="button-clear-date"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+              {filters.participants !== "all" && (
+                <Badge variant="secondary" className="gap-1">
+                  <Users className="w-3 h-3" />
+                  {PARTICIPANTS_FILTERS.find(p => p.value === filters.participants)?.label}
+                  <button 
+                    onClick={() => handleFilterChange("participants", "all")}
+                    className="ml-1 hover:text-destructive"
+                    data-testid="button-clear-participants"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
+              {filters.cost !== "all" && (
+                <Badge variant="secondary" className="gap-1">
+                  <Coins className="w-3 h-3" />
+                  {COST_FILTERS.find(c => c.value === filters.cost)?.label}
+                  <button 
+                    onClick={() => handleFilterChange("cost", "all")}
+                    className="ml-1 hover:text-destructive"
+                    data-testid="button-clear-cost"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              )}
             </div>
           )}
 
-          <div className="mb-6 overflow-x-auto pb-2 -mx-4 px-4">
-            <div className="flex gap-2">
-              <Button
-                variant={selectedCategory === null ? "secondary" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(null)}
-                className="whitespace-nowrap"
-                data-testid="category-pill-all"
-              >
-                전체
-              </Button>
-              {INTEREST_CATEGORIES.map((category) => (
+          <div className="mb-6 flex items-center justify-between">
+            <div className="overflow-x-auto pb-2 -mx-4 px-4 flex-1">
+              <div className="flex gap-2">
                 <Button
-                  key={category}
-                  variant={selectedCategory === category ? "secondary" : "outline"}
+                  variant={filters.category === null ? "secondary" : "outline"}
                   size="sm"
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => handleFilterChange("category", null)}
                   className="whitespace-nowrap"
-                  data-testid={`category-pill-${category}`}
+                  data-testid="category-pill-all"
                 >
-                  {category}
+                  전체
                 </Button>
-              ))}
+                {INTEREST_CATEGORIES.map((category) => (
+                  <Button
+                    key={category}
+                    variant={filters.category === category ? "secondary" : "outline"}
+                    size="sm"
+                    onClick={() => handleFilterChange("category", category)}
+                    className="whitespace-nowrap"
+                    data-testid={`category-pill-${category}`}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div className="ml-4 flex-shrink-0">
+              <Select value={filters.sortBy} onValueChange={(v) => handleFilterChange("sortBy", v)}>
+                <SelectTrigger className="w-[120px]" data-testid="select-sort">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -784,23 +1084,23 @@ export default function Activities() {
                 <ActivityCardSkeleton />
                 <ActivityCardSkeleton />
               </>
-            ) : filteredActivities.length > 0 ? (
-              filteredActivities.map((activity) => (
+            ) : filteredAndSortedActivities.length > 0 ? (
+              filteredAndSortedActivities.map((activity) => (
                 <ActivityCard key={activity.id} activity={activity} />
               ))
             ) : (
               <div className="col-span-full text-center py-16 bg-muted/30 rounded-xl">
                 <Search className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-lg font-medium mb-2">
-                  {searchQuery || selectedCategory ? "검색 결과가 없습니다" : "등록된 동행이 없습니다"}
+                  {searchQuery || filters.category ? "검색 결과가 없습니다" : "등록된 동행이 없습니다"}
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  {searchQuery || selectedCategory 
-                    ? "다른 검색어나 카테고리를 시도해보세요"
+                  {searchQuery || filters.category 
+                    ? "다른 검색어나 필터 조건을 시도해보세요"
                     : "첫 번째 동행 모집을 시작해보세요!"
                   }
                 </p>
-                {!searchQuery && !selectedCategory && (
+                {!searchQuery && !filters.category && (
                   <Button onClick={() => setActiveTab("create")} data-testid="button-create-first-activity">
                     동행 모집하기
                   </Button>
