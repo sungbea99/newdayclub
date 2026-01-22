@@ -250,6 +250,7 @@ export const communityPosts = pgTable("community_posts", {
   images: text("images").array(),
   activityId: varchar("activity_id"),
   postType: varchar("post_type", { length: 20 }).default("activity"),
+  category: varchar("category", { length: 50 }),
   location: varchar("location", { length: 200 }),
   tags: text("tags").array(),
   likesCount: integer("likes_count").default(0),
