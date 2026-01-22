@@ -25,7 +25,8 @@ import {
   GROUP_SIZE, 
   GENDER_PREFERENCE,
   ACTIVITY_STYLES,
-  REGIONS
+  REGIONS,
+  DISTRICTS
 } from "@shared/schema";
 import type { Profile } from "@shared/schema";
 import { 
@@ -443,26 +444,57 @@ export default function ProfileEdit() {
               <FormField
                 control={form.control}
                 name="region"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>거주지역</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || ""}>
-                      <FormControl>
-                        <SelectTrigger data-testid="select-region">
-                          <SelectValue placeholder="지역을 선택하세요" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {REGIONS.map((region) => (
-                          <SelectItem key={region} value={region}>
-                            {region}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const currentRegion = field.value?.split(" ")[0] || "";
+                  const currentDistrict = field.value?.split(" ")[1] || "";
+                  const availableDistricts = currentRegion ? DISTRICTS[currentRegion] || [] : [];
+                  
+                  return (
+                    <FormItem>
+                      <FormLabel>거주지역</FormLabel>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Select 
+                          value={currentRegion}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                          }}
+                        >
+                          <FormControl>
+                            <SelectTrigger data-testid="select-region">
+                              <SelectValue placeholder="시/도" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {REGIONS.map((region) => (
+                              <SelectItem key={region} value={region}>
+                                {region}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Select 
+                          value={currentDistrict}
+                          onValueChange={(value) => {
+                            field.onChange(`${currentRegion} ${value}`);
+                          }}
+                          disabled={!currentRegion}
+                        >
+                          <SelectTrigger data-testid="select-district">
+                            <SelectValue placeholder="구/군" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableDistricts.map((district) => (
+                              <SelectItem key={district} value={district}>
+                                {district}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
 
               <FormField

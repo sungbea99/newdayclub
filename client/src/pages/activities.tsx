@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { Activity, Profile } from "@shared/schema";
-import { INTEREST_CATEGORIES, REGIONS } from "@shared/schema";
+import { INTEREST_CATEGORIES, REGIONS, DISTRICTS } from "@shared/schema";
 import { 
   CalendarDays, 
   MapPin, 
@@ -141,6 +141,18 @@ function FilterSheet({
   selectedRegion: string | null;
   onRegionChange: (region: string | null) => void;
 }) {
+  const currentCity = selectedRegion?.split(" ")[0] || null;
+  const currentDistrict = selectedRegion?.split(" ")[1] || null;
+  const availableDistricts = currentCity ? DISTRICTS[currentCity] || [] : [];
+
+  const handleCityChange = (city: string | null) => {
+    onRegionChange(city);
+  };
+
+  const handleDistrictChange = (district: string) => {
+    onRegionChange(`${currentCity} ${district}`);
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -154,12 +166,12 @@ function FilterSheet({
         </SheetHeader>
         <div className="py-6 space-y-6">
           <div>
-            <h4 className="font-medium mb-4">지역</h4>
+            <h4 className="font-medium mb-3">시/도</h4>
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={selectedRegion === null ? "secondary" : "outline"}
                 size="sm"
-                onClick={() => onRegionChange(null)}
+                onClick={() => handleCityChange(null)}
                 data-testid="filter-region-all"
               >
                 전체
@@ -167,9 +179,9 @@ function FilterSheet({
               {REGIONS.map((region) => (
                 <Button
                   key={region}
-                  variant={selectedRegion === region ? "secondary" : "outline"}
+                  variant={currentCity === region ? "secondary" : "outline"}
                   size="sm"
-                  onClick={() => onRegionChange(region)}
+                  onClick={() => handleCityChange(region)}
                   data-testid={`filter-region-${region}`}
                 >
                   {region}
@@ -177,6 +189,32 @@ function FilterSheet({
               ))}
             </div>
           </div>
+          {currentCity && availableDistricts.length > 0 && (
+            <div>
+              <h4 className="font-medium mb-3">구/군</h4>
+              <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+                <Button
+                  variant={!currentDistrict ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => onRegionChange(currentCity)}
+                  data-testid="filter-district-all"
+                >
+                  전체
+                </Button>
+                {availableDistricts.map((district) => (
+                  <Button
+                    key={district}
+                    variant={currentDistrict === district ? "secondary" : "outline"}
+                    size="sm"
+                    onClick={() => handleDistrictChange(district)}
+                    data-testid={`filter-district-${district}`}
+                  >
+                    {district}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
           <div>
             <h4 className="font-medium mb-4">카테고리</h4>
             <div className="space-y-2">
