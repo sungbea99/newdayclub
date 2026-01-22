@@ -382,7 +382,7 @@ export default function Community() {
         <h1 className="text-xl font-bold mb-3">커뮤니티</h1>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="following" data-testid="tab-following">팔로잉</TabsTrigger>
+            <TabsTrigger value="following" data-testid="tab-friends">친구</TabsTrigger>
             <TabsTrigger value="recommended" data-testid="tab-recommended">추천</TabsTrigger>
             <TabsTrigger value="popular" data-testid="tab-popular">인기</TabsTrigger>
           </TabsList>
