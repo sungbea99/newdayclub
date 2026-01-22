@@ -433,6 +433,14 @@ export default function Community() {
       <div className="sticky top-16 z-10 bg-background/80 backdrop-blur-lg -mx-4 px-4 py-3 border-b border-border">
         <h1 className="text-xl font-bold mb-3">커뮤니티</h1>
         
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-3">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="following" data-testid="tab-friends">친구</TabsTrigger>
+            <TabsTrigger value="recommended" data-testid="tab-recommended">추천</TabsTrigger>
+            <TabsTrigger value="popular" data-testid="tab-popular">인기</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         <div className="relative mb-3">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -444,7 +452,7 @@ export default function Community() {
           />
         </div>
 
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 mb-3">
+        <div className="overflow-x-auto pb-2 -mx-4 px-4">
           <div className="flex gap-2">
             <Button
               variant={selectedCategory === null ? "secondary" : "outline"}
@@ -461,23 +469,14 @@ export default function Community() {
                 variant={selectedCategory === category ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
-                className="whitespace-nowrap gap-1"
+                className="whitespace-nowrap"
                 data-testid={`category-pill-${category}`}
               >
-                <CategoryIcon category={category} size="sm" />
                 {category}
               </Button>
             ))}
           </div>
         </div>
-
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="following" data-testid="tab-friends">친구</TabsTrigger>
-            <TabsTrigger value="recommended" data-testid="tab-recommended">추천</TabsTrigger>
-            <TabsTrigger value="popular" data-testid="tab-popular">인기</TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
 
       <div className="mt-4">
