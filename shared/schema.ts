@@ -8,14 +8,14 @@ export * from "./models/auth";
 
 // Interest categories for matching
 export const INTEREST_CATEGORIES = [
-  "공연/전시",
-  "걷기/트레킹",
-  "스포츠",
-  "문화생활",
-  "교육/자기계발",
-  "봉사활동",
-  "여행",
   "맛집",
+  "걷기/트레킹",
+  "여행",
+  "문화생활",
+  "공연/전시",
+  "스포츠",
+  "봉사활동",
+  "교육/자기계발",
   "기타취미"
 ] as const;
 
