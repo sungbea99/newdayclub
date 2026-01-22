@@ -23,7 +23,10 @@ import {
   MessageCircle,
   Share2,
   Bookmark,
-  Send
+  Send,
+  Star,
+  Activity as ActivityIcon,
+  ChevronRight
 } from "lucide-react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -290,15 +293,15 @@ export default function ActivityDetail() {
               <h3 className="font-bold mb-4">모집자</h3>
               <Link href={`/profile/${activity.authorId}`}>
                 <div className="flex items-center gap-3 cursor-pointer hover-elevate p-2 -m-2 rounded-lg" data-testid="link-author-profile">
-                  <Avatar className="w-12 h-12">
+                  <Avatar className="w-14 h-14">
                     <AvatarImage src={author?.profileImages?.[0]} />
-                    <AvatarFallback className="bg-primary text-primary-foreground">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-lg">
                       {author?.nickname?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
-                    <p className="font-medium">{author?.nickname || "익명"}</p>
-                    <div className="flex items-center gap-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium truncate">{author?.nickname || "익명"}</p>
                       <VerificationBadges 
                         isPhoneVerified={author?.isPhoneVerified ?? undefined}
                         isPhotoVerified={author?.isPhotoVerified ?? undefined}
@@ -306,16 +309,130 @@ export default function ActivityDetail() {
                         averageRating={author?.averageRating || 0}
                       />
                     </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                      {author?.birthYear && (
+                        <span>{new Date().getFullYear() - author.birthYear}세</span>
+                      )}
+                      {author?.birthYear && author?.region && <span>·</span>}
+                      {author?.region && <span>{author.region}</span>}
+                    </div>
                   </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </div>
               </Link>
+              
+              <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t">
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-1 text-amber-500 mb-1">
+                    <Star className="w-4 h-4 fill-current" />
+                    <span className="font-bold">{((author?.averageRating || 0) / 10).toFixed(1)}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">평균 평점</p>
+                </div>
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-1 text-primary mb-1">
+                    <ActivityIcon className="w-4 h-4" />
+                    <span className="font-bold">{author?.activityCount || 0}회</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">활동 횟수</p>
+                </div>
+              </div>
+
               {author?.bio && (
-                <p className="text-sm text-muted-foreground mt-3 line-clamp-3">
+                <p className="text-sm text-muted-foreground mt-4 pt-4 border-t line-clamp-3">
                   {author.bio}
                 </p>
               )}
             </CardContent>
           </Card>
+
+          {participants && participants.length > 0 && (
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold">참여 신청자</h3>
+                  <span className="text-sm text-muted-foreground">{participants.length}명</span>
+                </div>
+                <div className="space-y-3">
+                  {participants.slice(0, 4).map((participant, index) => {
+                    const profile = (participant as any).profile;
+                    const age = profile?.birthYear 
+                      ? new Date().getFullYear() - profile.birthYear 
+                      : null;
+                    return (
+                      <Link key={participant.userId} href={`/profile/${participant.userId}`}>
+                        <div 
+                          className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover-elevate cursor-pointer"
+                          data-testid={`participant-${index}`}
+                        >
+                          <Avatar className="w-10 h-10">
+                            <AvatarImage src={profile?.profileImages?.[0]} />
+                            <AvatarFallback className="bg-muted text-muted-foreground text-sm">
+                              {profile?.nickname?.charAt(0) || "?"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate">
+                              {profile?.nickname || "익명"}
+                            </p>
+                            {(age || profile?.region) && (
+                              <p className="text-xs text-muted-foreground">
+                                {age && `${age}세`}
+                                {age && profile?.region && " · "}
+                                {profile?.region}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                  {participants.length > 4 && (
+                    <p className="text-sm text-muted-foreground text-center" data-testid="text-more-participants">
+                      외 {participants.length - 4}명
+                    </p>
+                  )}
+                </div>
+                {isAuthor && (
+                  <Button variant="outline" size="sm" className="w-full mt-4" asChild>
+                    <Link href={`/activities/${id}/participants`}>
+                      신청자 관리
+                      <ChevronRight className="w-4 h-4 ml-1" />
+                    </Link>
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {activity.location && (
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="font-bold mb-4">만남 장소</h3>
+                <a 
+                  href={`https://map.kakao.com/?q=${encodeURIComponent(activity.location)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                  data-testid="link-map"
+                >
+                  <div className="aspect-[16/9] rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden mb-3 flex items-center justify-center hover-elevate cursor-pointer border">
+                    <div className="text-center p-4">
+                      <MapPin className="w-10 h-10 mx-auto text-primary mb-2" />
+                      <p className="text-sm font-medium">{activity.location}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        지도에서 보기
+                      </p>
+                    </div>
+                  </div>
+                </a>
+                <div className="flex items-center gap-2 text-sm">
+                  <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">{activity.location}</span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="flex gap-2">
             <Button 
