@@ -380,7 +380,7 @@ export default function Landing() {
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold mb-4"
             >
-              뉴데이클럽이 선사하는 <span className="text-primary">특별한 경험</span>
+              뉴데이클럽에서 만들어가는 <span className="text-primary">특별한 경험</span>
             </motion.h2>
             <motion.p 
               variants={fadeInUp}
