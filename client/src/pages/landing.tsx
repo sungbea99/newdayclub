@@ -123,7 +123,7 @@ export default function Landing() {
               <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
                 <Users className="w-4 h-4 text-primary-foreground" />
               </div>
-              <span className="font-semibold text-lg text-foreground tracking-tight">동락</span>
+              <span className="font-semibold text-lg text-foreground tracking-tight">뉴데이클럽</span>
             </motion.div>
             
             <div className="hidden md:flex items-center gap-6">
@@ -195,7 +195,7 @@ export default function Landing() {
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               >
                 <span className="text-foreground/80">함께하는 즐거움</span><br />
-                <span className="text-primary">동락</span>
+                <span className="text-primary">뉴데이클럽</span>
               </motion.h1>
               
               <motion.p 
@@ -383,7 +383,7 @@ export default function Landing() {
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold mb-4"
             >
-              동락이 선사하는 <span className="text-primary">특별한 경험</span>
+              뉴데이클럽이 선사하는 <span className="text-primary">특별한 경험</span>
             </motion.h2>
             <motion.p 
               variants={fadeInUp}
@@ -486,7 +486,7 @@ export default function Landing() {
                   이런 분들께 <span className="text-primary">추천</span>합니다
                 </h2>
                 <p className="text-lg text-muted-foreground">
-                  동락은 다음과 같은 분들을 위해 만들어졌습니다
+                  뉴데이클럽은 다음과 같은 분들을 위해 만들어졌습니다
                 </p>
               </div>
               
@@ -529,7 +529,7 @@ export default function Landing() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent rounded-2xl" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                   <p className="text-lg font-medium">새로운 인연, 새로운 경험</p>
-                  <p className="text-white/80 text-sm">동락에서 시작하세요</p>
+                  <p className="text-white/80 text-sm">뉴데이클럽에서 시작하세요</p>
                 </div>
               </div>
             </motion.div>
@@ -550,7 +550,7 @@ export default function Landing() {
               variants={fadeInUp}
               className="text-3xl md:text-4xl font-bold mb-4"
             >
-              왜 동락인가요?
+              왜 뉴데이클럽인가요?
             </motion.h2>
             <motion.p 
               variants={fadeInUp}
@@ -844,10 +844,10 @@ export default function Landing() {
             <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
               <Users className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-bold text-foreground">동락</span>
+            <span className="font-bold text-foreground">뉴데이클럽</span>
           </motion.div>
           <p className="text-sm text-muted-foreground">
-            © 2025 동락. All rights reserved.
+            © 2025 뉴데이클럽. All rights reserved.
           </p>
         </div>
       </footer>

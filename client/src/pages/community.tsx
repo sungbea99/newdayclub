@@ -65,7 +65,7 @@ function PostCard({ post }: { post: CommunityPost & { author?: Profile; isLikedB
 
   const handleShare = async () => {
     const shareData = {
-      title: post.author?.nickname ? `${post.author.nickname}님의 게시글` : "동락 게시글",
+      title: post.author?.nickname ? `${post.author.nickname}님의 게시글` : "뉴데이클럽 게시글",
       text: post.content || "",
       url: `${window.location.origin}/community/${post.id}`,
     };

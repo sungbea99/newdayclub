@@ -89,7 +89,7 @@ export default function ActivityDetail() {
 
   const handleShare = async () => {
     const shareData = {
-      title: activity?.title || "동락 동행",
+      title: activity?.title || "뉴데이클럽 동행",
       text: activity?.description || "",
       url: window.location.href,
     };
