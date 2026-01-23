@@ -88,8 +88,6 @@ export const profiles = pgTable("profiles", {
   profileCompleteness: integer("profile_completeness").default(0),
   activityCount: integer("activity_count").default(0),
   averageRating: integer("average_rating").default(0),
-  userTitles: text("user_titles").array(),
-  titlesUpdatedAt: timestamp("titles_updated_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
