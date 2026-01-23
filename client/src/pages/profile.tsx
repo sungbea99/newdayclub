@@ -17,7 +17,6 @@ import {
   MapPin, 
   Calendar, 
   Users, 
-  Star,
   Grid3X3,
   List,
   MessageCircle,
@@ -173,7 +172,6 @@ export default function ProfilePage() {
                   isPhoneVerified={profile?.isPhoneVerified || false}
                   isPhotoVerified={profile?.isPhotoVerified || false}
                   activityCount={profile?.activityCount || 0}
-                  averageRating={profile?.averageRating || 0}
                 />
               </div>
               
@@ -197,12 +195,6 @@ export default function ProfilePage() {
                   <Users className="w-4 h-4 text-primary" />
                   <span>활동 {profile?.activityCount || 0}회</span>
                 </div>
-                {profile?.averageRating && profile.averageRating > 0 && (
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-500" />
-                    <span>{(profile.averageRating / 10).toFixed(1)}</span>
-                  </div>
-                )}
               </div>
             </div>
             

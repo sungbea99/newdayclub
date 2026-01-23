@@ -24,7 +24,6 @@ import {
   Share2,
   Bookmark,
   Send,
-  Star,
   Activity as ActivityIcon,
   ChevronRight
 } from "lucide-react";
@@ -306,7 +305,6 @@ export default function ActivityDetail() {
                         isPhoneVerified={author?.isPhoneVerified ?? undefined}
                         isPhotoVerified={author?.isPhotoVerified ?? undefined}
                         activityCount={author?.activityCount || 0}
-                        averageRating={author?.averageRating || 0}
                       />
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
@@ -321,21 +319,12 @@ export default function ActivityDetail() {
                 </div>
               </Link>
               
-              <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t">
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-amber-500 mb-1">
-                    <Star className="w-4 h-4 fill-current" />
-                    <span className="font-bold">{((author?.averageRating || 0) / 10).toFixed(1)}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">평균 평점</p>
+              <div className="mt-4 pt-4 border-t text-center">
+                <div className="flex items-center justify-center gap-1 text-primary mb-1">
+                  <ActivityIcon className="w-4 h-4" />
+                  <span className="font-bold">{author?.activityCount || 0}회</span>
                 </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-primary mb-1">
-                    <ActivityIcon className="w-4 h-4" />
-                    <span className="font-bold">{author?.activityCount || 0}회</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">활동 횟수</p>
-                </div>
+                <p className="text-xs text-muted-foreground">활동 횟수</p>
               </div>
 
               {author?.bio && (

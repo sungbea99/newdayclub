@@ -85,7 +85,6 @@ function ActivityCard({ activity, author }: { activity: Activity; author?: Profi
                   isPhoneVerified={author.isPhoneVerified || false}
                   isPhotoVerified={author.isPhotoVerified || false}
                   activityCount={author.activityCount || 0}
-                  averageRating={author.averageRating || 0}
                 />
               </div>
             )}
