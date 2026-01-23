@@ -296,7 +296,7 @@ export default function Landing() {
                 </FloatingCard>
                 
                 <FloatingCard 
-                  className="absolute bottom-16 -left-4 bg-card rounded-xl shadow-lg p-4 border border-border"
+                  className="absolute bottom-2/3 -left-4 bg-card rounded-xl shadow-lg p-4 border border-border"
                   delay={0.8}
                 >
                   <div className="flex items-center gap-3">
