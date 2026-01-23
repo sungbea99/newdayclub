@@ -551,7 +551,7 @@ export default function Landing() {
               variants={fadeInUp}
               className="text-lg text-muted-foreground max-w-2xl mx-auto"
             >
-              50-60대에게 최적화된 안전하고 신뢰할 수 있는 동행 매칭 플랫폼
+              50-60대에게 최적화된 안전하고 신뢰할 수 있는 여가생활 커뮤니티
             </motion.p>
           </motion.div>
           
