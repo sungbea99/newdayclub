@@ -406,7 +406,7 @@ export default function Landing() {
                 color: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400"
               },
               { 
-                title: "진정한 또래 친구 만들기", 
+                title: "취향이 비슷한 친구 만들기", 
                 desc: "같은 시대를 살아온 또래와 공감대를 나누고, 인생 후반전을 함께할 진정한 친구를 만들어보세요.",
                 icon: UserPlus,
                 image: stockSocialImage,
