@@ -33,6 +33,7 @@ export interface IStorage {
   getParticipants(activityId: string): Promise<ActivityParticipant[]>;
   getParticipant(activityId: string, userId: string): Promise<ActivityParticipant | undefined>;
   getParticipantById(id: string): Promise<ActivityParticipant | undefined>;
+  getUserParticipations(userId: string): Promise<ActivityParticipant[]>;
   createParticipant(participant: InsertParticipant): Promise<ActivityParticipant>;
   updateParticipantStatus(id: string, status: string): Promise<ActivityParticipant | undefined>;
   
@@ -188,6 +189,11 @@ export class DatabaseStorage implements IStorage {
     const [participant] = await db.select().from(activityParticipants)
       .where(eq(activityParticipants.id, id));
     return participant;
+  }
+
+  async getUserParticipations(userId: string): Promise<ActivityParticipant[]> {
+    return db.select().from(activityParticipants)
+      .where(eq(activityParticipants.userId, userId));
   }
 
   async createParticipant(participant: InsertParticipant): Promise<ActivityParticipant> {

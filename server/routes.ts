@@ -2,6 +2,12 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+});
 
 export async function registerRoutes(
   httpServer: Server,
@@ -716,6 +722,135 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
       res.status(500).json({ message: "Failed to mark all notifications as read" });
+    }
+  });
+
+  // AI-based user titles generation
+  app.post("/api/profiles/:userId/generate-titles", isAuthenticated, async (req: any, res) => {
+    try {
+      const targetUserId = req.params.userId;
+      const requestingUserId = req.user.claims.sub;
+      
+      // Only allow generating titles for own profile or admin
+      if (targetUserId !== requestingUserId) {
+        return res.status(403).json({ message: "본인의 칭호만 생성할 수 있습니다" });
+      }
+
+      const profile = await storage.getProfile(targetUserId);
+      if (!profile) {
+        return res.status(404).json({ message: "프로필을 찾을 수 없습니다" });
+      }
+
+      // Gather user activity data
+      const activities = await storage.getActivitiesByUser(targetUserId);
+      const participations = await storage.getUserParticipations(targetUserId);
+      const acceptedParticipations = participations.filter((p: any) => p.status === "accepted");
+      
+      // Build context for AI
+      const activitySummary = {
+        createdActivitiesCount: activities.length,
+        participatedActivitiesCount: acceptedParticipations.length,
+        totalActivityCount: profile.activityCount || 0,
+        interests: profile.interests || [],
+        activityStyles: profile.activityStyles || [],
+        preferredGroupSize: profile.preferredGroupSize,
+        activityFrequency: profile.activityFrequency,
+        isPhoneVerified: profile.isPhoneVerified,
+        isPhotoVerified: profile.isPhotoVerified,
+        categories: Array.from(new Set(activities.map((a: any) => a.category))),
+      };
+
+      const prompt = `당신은 50-60대 시니어를 위한 여가 활동 매칭 플랫폼 "동락"의 사용자 칭호 생성 AI입니다.
+
+사용자의 활동 데이터를 분석하여 그 사람을 잘 표현하는 긍정적인 칭호(키워드) 2-3개를 생성해주세요.
+
+## 사용자 활동 데이터:
+- 주최한 동행 수: ${activitySummary.createdActivitiesCount}회
+- 참여한 동행 수: ${activitySummary.participatedActivitiesCount}회
+- 총 활동 횟수: ${activitySummary.totalActivityCount}회
+- 관심사: ${activitySummary.interests.join(", ") || "미설정"}
+- 활동 스타일: ${activitySummary.activityStyles.join(", ") || "미설정"}
+- 선호 그룹 크기: ${activitySummary.preferredGroupSize || "미설정"}
+- 활동 빈도: ${activitySummary.activityFrequency || "미설정"}
+- 주요 활동 카테고리: ${activitySummary.categories.join(", ") || "없음"}
+- 전화번호 인증: ${activitySummary.isPhoneVerified ? "완료" : "미완료"}
+- 사진 인증: ${activitySummary.isPhotoVerified ? "완료" : "미완료"}
+
+## 칭호 생성 규칙:
+1. 각 칭호는 2-4글자의 한국어 단어 또는 짧은 표현이어야 합니다
+2. 긍정적이고 격려하는 느낌의 단어를 선택하세요
+3. 사용자의 활동 패턴과 특성을 반영하세요
+4. 시니어 세대에게 친숙하고 이해하기 쉬운 표현을 사용하세요
+
+## 칭호 예시:
+- 활발한 활동자: "열정맨", "활력왕", "부지런이"
+- 많은 동행 주최: "리더", "모임장", "이끄미"
+- 다양한 관심사: "다재다능", "만능인", "호기심왕"
+- 인증 완료: "신뢰인", "인증파", "믿음직"
+- 문화/예술 활동: "문화인", "예술가", "감성파"
+- 운동/트레킹: "건강인", "등산러", "산악인"
+- 신규 사용자: "새싹", "신입생", "탐험가"
+
+정확히 2-3개의 칭호만 생성하세요. JSON 형식으로 응답해주세요:
+{"titles": ["칭호1", "칭호2", "칭호3"]}`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+        max_tokens: 200,
+      });
+
+      const content = response.choices[0]?.message?.content || '{"titles": []}';
+      const parsed = JSON.parse(content);
+      let titles = parsed.titles || [];
+
+      // Validate AI response: ensure titles is an array of 2-3 short Korean strings
+      if (!Array.isArray(titles)) {
+        titles = [];
+      }
+      
+      // Filter and sanitize titles
+      titles = titles
+        .filter((t: any) => typeof t === "string" && t.length >= 2 && t.length <= 10)
+        .slice(0, 3); // Max 3 titles
+      
+      // If no valid titles generated, use default based on user data
+      if (titles.length === 0) {
+        if (activitySummary.totalActivityCount >= 5) {
+          titles = ["활동가"];
+        } else {
+          titles = ["새싹"];
+        }
+      }
+
+      // Update profile with new titles
+      const updatedProfile = await storage.updateProfile(targetUserId, {
+        userTitles: titles,
+        titlesUpdatedAt: new Date(),
+      });
+
+      res.json({ titles, profile: updatedProfile });
+    } catch (error) {
+      console.error("Error generating user titles:", error);
+      res.status(500).json({ message: "칭호 생성에 실패했습니다" });
+    }
+  });
+
+  // Get user titles
+  app.get("/api/profiles/:userId/titles", async (req, res) => {
+    try {
+      const profile = await storage.getProfile(req.params.userId);
+      if (!profile) {
+        return res.status(404).json({ message: "프로필을 찾을 수 없습니다" });
+      }
+      res.json({ 
+        titles: profile.userTitles || [],
+        updatedAt: profile.titlesUpdatedAt
+      });
+    } catch (error) {
+      console.error("Error fetching user titles:", error);
+      res.status(500).json({ message: "칭호 조회에 실패했습니다" });
     }
   });
 

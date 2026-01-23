@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CategoryBadge } from "@/components/category-icon";
 import { VerificationBadges } from "@/components/verification-badge";
+import { UserTitles } from "@/components/user-titles";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -17,7 +18,6 @@ import {
   MapPin, 
   Calendar, 
   Users, 
-  Star,
   Grid3X3,
   List,
   MessageCircle,
@@ -192,18 +192,20 @@ export default function ProfilePage() {
                 )}
               </div>
               
-              <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-4 text-sm mb-4">
                 <div className="flex items-center gap-1">
                   <Users className="w-4 h-4 text-primary" />
                   <span>활동 {profile?.activityCount || 0}회</span>
                 </div>
-                {profile?.averageRating && profile.averageRating > 0 && (
-                  <div className="flex items-center gap-1">
-                    <Star className="w-4 h-4 text-yellow-500" />
-                    <span>{(profile.averageRating / 10).toFixed(1)}</span>
-                  </div>
-                )}
               </div>
+
+              {profileId && (
+                <UserTitles 
+                  userId={profileId} 
+                  isOwnProfile={isOwnProfile}
+                  showGenerateButton={isOwnProfile}
+                />
+              )}
             </div>
             
             <div className="w-full md:w-auto">
