@@ -194,7 +194,7 @@ export default function Landing() {
                 variants={fadeInUp}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight"
               >
-                <span className="text-foreground/80">함께하는 즐거움</span><br />
+                <span className="font-semibold text-[#4d4946cc]">매일을 새롭게</span><br />
                 <span className="text-primary">뉴데이클럽</span>
               </motion.h1>
               
