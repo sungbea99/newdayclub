@@ -148,7 +148,6 @@ export default function Landing() {
           </div>
         </div>
       </motion.nav>
-
       <section ref={heroRef} className="relative pt-24 pb-8 md:pt-32 md:pb-16 px-4 md:px-6 min-h-screen flex items-center">
         <div className="absolute inset-0 overflow-hidden">
           <motion.div 
@@ -276,7 +275,7 @@ export default function Landing() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.8 }}
                   >
-                    <h3 className="text-2xl font-bold mb-1">나누면 커지는 행복</h3>
+                    <h3 className="text-2xl font-bold mb-1">함께하는 즐거움</h3>
                     <p className="text-white/80">새로운 친구들과 함께 여가생활을 즐겨보세요</p>
                   </motion.div>
                 </div>
@@ -341,7 +340,6 @@ export default function Landing() {
           </div>
         </motion.div>
       </section>
-
       <section className="py-16 px-4 md:px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -369,7 +367,6 @@ export default function Landing() {
           </motion.div>
         </div>
       </section>
-
       <section className="py-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div 
@@ -470,7 +467,6 @@ export default function Landing() {
           </motion.div>
         </div>
       </section>
-
       <section className="py-20 px-4 md:px-6 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -536,7 +532,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       <section id="features" className="py-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div 
@@ -594,7 +589,6 @@ export default function Landing() {
           </motion.div>
         </div>
       </section>
-
       <section id="categories" className="py-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div 
@@ -640,7 +634,6 @@ export default function Landing() {
           </motion.div>
         </div>
       </section>
-
       <section className="py-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -720,7 +713,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       <section id="how-it-works" className="py-20 px-4 md:px-6 bg-muted/30">
         <div className="max-w-7xl mx-auto">
           <motion.div 
@@ -773,7 +765,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       <section className="py-20 px-4 md:px-6 bg-primary text-primary-foreground relative overflow-hidden">
         <motion.div 
           className="absolute inset-0"
@@ -834,7 +825,6 @@ export default function Landing() {
           </motion.div>
         </motion.div>
       </section>
-
       <footer className="py-8 px-4 md:px-6 border-t border-border">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <motion.div 
